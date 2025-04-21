@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import PostCard from './PostCard';
 
 const PostList = () => {
   const [posts, setPosts] = useState([]);
@@ -10,9 +9,8 @@ const PostList = () => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await axios.get('/api/posts');
-        // Ensure response.data is an array
-        setPosts(Array.isArray(response.data) ? response.data : []);
+        const response = await axios.get('http://localhost:5000/api/posts');
+        setPosts(response.data);
         setLoading(false);
       } catch (err) {
         setError('Failed to fetch posts');
@@ -26,14 +24,19 @@ const PostList = () => {
 
   if (loading) return <div className="loading">Loading posts...</div>;
   if (error) return <div className="error">{error}</div>;
-  if (!Array.isArray(posts) || posts.length === 0) {
-    return <div className="no-posts">No posts available</div>;
-  }
 
   return (
     <div className="posts-grid">
-      {posts.map((post) => (
-        <PostCard key={post._id || Math.random()} post={post} />
+      {posts.map(post => (
+        <div key={post._id} className="post-card">
+          <div className="post-header">
+            <span className="post-author">{post.author}</span>
+            <span className="post-date">
+              {new Date(post.date).toLocaleDateString()}
+            </span>
+          </div>
+          <div className="post-content">{post.content}</div>
+        </div>
       ))}
     </div>
   );
