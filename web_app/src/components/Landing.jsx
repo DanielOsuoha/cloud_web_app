@@ -1,4 +1,6 @@
 import React from 'react';
+import PostList from './Posts/PostList';
+import CreatePost from './Posts/CreatePost';
 
 const Landing = () => {
   return (
@@ -11,21 +13,9 @@ const Landing = () => {
       <section className="posts-feed">
         <div className="posts-header">
           <h2>Recent Posts</h2>
-          {/* Add a create post button that shows only if user is logged in */}
+          <CreatePost />
         </div>
-        
-        <div className="posts-grid">
-          {/* This will be where your posts are mapped */}
-          <div className="post-card">
-            <div className="post-header">
-              <span className="post-author">John Doe</span>
-              <span className="post-date">2 hours ago</span>
-            </div>
-            <div className="post-content">
-              <p>This is a sample post content. Your actual posts will go here.</p>
-            </div>
-          </div>
-        </div>
+        <PostList />
       </section>
 
       <aside className="sidebar">
