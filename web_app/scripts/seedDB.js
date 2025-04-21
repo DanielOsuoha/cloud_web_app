@@ -15,15 +15,13 @@ const samplePosts = [
 async function seedDatabase() {
   try {
     await mongoose.connect('mongodb://localhost:27017/social_app');
-    
-    // Check if database is already seeded
+
     const count = await Post.countDocuments();
     if (count > 0) {
       console.log('Database already has data, skipping seed');
       process.exit(0);
     }
 
-    // Only seed if empty
     await Post.insertMany(samplePosts);
     console.log('Database seeded successfully');
   } catch (error) {
