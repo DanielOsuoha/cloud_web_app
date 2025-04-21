@@ -8,21 +8,7 @@ app.use(cors());
 app.use(express.json());
 
 mongoose.connect('mongodb://localhost:27017/social_app')
-  .then(async () => {
-    console.log('Connected to local MongoDB');
-    
-    const count = await Post.countDocuments();
-    console.log(`Current posts in database: ${count}`);
-
-    if (count === 1) {
-      const testPost = new Post({
-        author: 'Test User',
-        content: 'This is a test post'
-      });
-      await testPost.save();
-      console.log('Created test post:', testPost);
-    }
-  })
+  .then(() => console.log('Connected to local MongoDB'))
   .catch(err => console.error('MongoDB connection error:', err));
 
 // Test route to create a post
