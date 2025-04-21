@@ -147,6 +147,135 @@ button:focus-visible {
   color: #1c1e21;
 }
 
+/* Create post section */
+.create-post {
+  margin-bottom: 20px;
+}
+
+.create-post form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.create-post textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  resize: vertical;
+}
+
+.create-post button {
+  align-self: flex-end;
+  padding: 8px 16px;
+  background-color: #1a73e8;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.create-post button:hover {
+  background-color: #1557b0;
+}
+
+/* Unauthorized create post section */
+.create-post-unauthorized {
+  text-align: center;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.create-post-unauthorized button {
+  background: none;
+  border: none;
+  color: #1a73e8;
+  cursor: pointer;
+  font-weight: bold;
+  padding: 0 4px;
+}
+
+.create-post-unauthorized button:hover {
+  text-decoration: underline;
+}
+
+/* Auth required messages */
+.auth-required {
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 16px 0;
+  text-align: center;
+}
+
+.auth-required p {
+  color: #6c757d;
+  margin-bottom: 12px;
+}
+
+.auth-required-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.auth-required-buttons button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.auth-required-login {
+  background-color: #1a73e8;
+  color: white;
+}
+
+.auth-required-login:hover {
+  background-color: #1557b0;
+}
+
+.auth-required-signup {
+  background-color: #34a853;
+  color: white;
+}
+
+.auth-required-signup:hover {
+  background-color: #2d8645;
+}
+
+/* Styles for disabled interactions */
+.disabled-interaction {
+  position: relative;
+  cursor: not-allowed;
+}
+
+.disabled-interaction::after {
+  content: 'Please login to interact';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.disabled-interaction:hover::after {
+  opacity: 1;
+}
+
 /* Sidebar */
 .sidebar {
   width: 300px;

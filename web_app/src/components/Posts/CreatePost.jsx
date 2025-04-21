@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import AuthRequired from '../Auth/AuthRequired';
 
 const CreatePost = () => {
   const [content, setContent] = useState('');
   const navigate = useNavigate();
-  // This is a temporary solution - you'll want to implement proper auth state management
-  const isLoggedIn = false; // Replace this with actual auth check
+  const isLoggedIn = false; // Replace with your auth logic
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -18,11 +18,7 @@ const CreatePost = () => {
   };
 
   if (!isLoggedIn) {
-    return (
-      <div className="create-post-unauthorized">
-        <p>Please <button onClick={() => navigate('/login')}>login</button> to create a post</p>
-      </div>
-    );
+    return <AuthRequired message="Please login to create a post" />;
   }
 
   return (
