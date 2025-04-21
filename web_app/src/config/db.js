@@ -2,10 +2,11 @@ import mongoose from 'mongoose';
 
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGO_URI);
-    console.log(`MongoDB Connected: ${conn.connection.host}`);
+    // This connects to a local MongoDB instance
+    await mongoose.connect('mongodb://localhost:27017/social_app');
+    console.log('Connected to local MongoDB');
   } catch (error) {
-    console.error(`Error: ${error.message}`);
+    console.error('MongoDB connection error:', error);
     process.exit(1);
   }
 };
