@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 
-const Login = () => {
+const SignUp = () => {
   const [formData, setFormData] = useState({
+    username: '',
     email: '',
-    password: ''
+    password: '',
+    confirmPassword: ''
   });
 
   const handleChange = (e) => {
@@ -15,14 +17,23 @@ const Login = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Add login logic here
-    console.log('Login attempt:', formData);
+    // Add signup logic here
+    console.log('Signup attempt:', formData);
   };
 
   return (
     <div className="auth-container">
-      <h2>Login</h2>
+      <h2>Sign Up</h2>
       <form onSubmit={handleSubmit}>
+        <div className="form-group">
+          <input
+            type="text"
+            name="username"
+            placeholder="Username"
+            value={formData.username}
+            onChange={handleChange}
+          />
+        </div>
         <div className="form-group">
           <input
             type="email"
@@ -41,10 +52,19 @@ const Login = () => {
             onChange={handleChange}
           />
         </div>
-        <button type="submit">Login</button>
+        <div className="form-group">
+          <input
+            type="password"
+            name="confirmPassword"
+            placeholder="Confirm Password"
+            value={formData.confirmPassword}
+            onChange={handleChange}
+          />
+        </div>
+        <button type="submit">Sign Up</button>
       </form>
     </div>
   );
 };
 
-export default Login;
+export default SignUp;
