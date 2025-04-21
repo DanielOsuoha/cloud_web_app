@@ -1,25 +1,42 @@
 import express from 'express';
 import mongoose from 'mongoose';
+import cors from 'cors';
 import Post from './src/models/Post.js';
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 
-// Connect to local MongoDB
 mongoose.connect('mongodb://localhost:27017/social_app')
-  .then(() => console.log('Connected to local MongoDB'))
+  .then(async () => {
+    console.log('Connected to local MongoDB');
+    
+    const count = await Post.countDocuments();
+    console.log(`Current posts in database: ${count}`);
+
+    if (count === 1) {
+      const testPost = new Post({
+        author: 'Test User',
+        content: 'This is a test post'
+      });
+      await testPost.save();
+      console.log('Created test post:', testPost);
+    }
+  })
   .catch(err => console.error('MongoDB connection error:', err));
 
 // Test route to create a post
 app.post('/api/posts', async (req, res) => {
   try {
     const post = new Post({
-      author: 'Test User',
-      content: 'Test post content'
+      author: req.body.author || 'Anonymous',
+      content: req.body.content || 'Empty post'
     });
     await post.save();
+    console.log('New post created:', post);
     res.json(post);
   } catch (error) {
+    console.error('Error creating post:', error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -27,9 +44,11 @@ app.post('/api/posts', async (req, res) => {
 // Route to get all posts
 app.get('/api/posts', async (req, res) => {
   try {
-    const posts = await Post.find();
+    const posts = await Post.find().sort({ date: -1 });
+    console.log('Retrieved posts:', posts);
     res.json(posts);
   } catch (error) {
+    console.error('Error fetching posts:', error);
     res.status(500).json({ error: error.message });
   }
 });
