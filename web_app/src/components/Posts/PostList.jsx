@@ -36,6 +36,7 @@ const PostList = () => {
             </span>
           </div>
           <div className="post-content">{post.content}</div>
+          <button className="comment-button">Comment</button>
         </div>
       ))}
     </div>

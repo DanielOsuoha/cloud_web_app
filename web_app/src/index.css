@@ -439,18 +439,35 @@ button:focus-visible {
   font-size: 16px;
   border: none;
   border-radius: 4px;
-  background-color: #007bff; /* a pleasing blue */
-  color: #ffffff;
+  background-color: #34a853;
+  color: white;
   cursor: pointer;
   transition: background-color 0.2s, transform 0.2s;
 }
 
 .create-post-button:hover:not(:disabled) {
-  background-color: #0056b3;
+  background-color: #aebab1;
+  color: #086521;
   transform: scale(1.02);
 }
 
 .create-post-button:disabled {
   background-color: #999;
   cursor: not-allowed;
+}
+
+.comment-button {
+  background-color: #34a853;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin-top: 10px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.comment-button:hover {
+  background-color: #aebab1;
+  color: #086521;
 }
