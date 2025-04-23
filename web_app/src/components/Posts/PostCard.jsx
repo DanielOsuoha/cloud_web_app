@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const PostCard = ({ post }) => {
@@ -9,9 +9,13 @@ const PostCard = ({ post }) => {
   // Initialize with any existing comments from the post
   const [comments, setComments] = useState(post.comments || []);
 
+  useEffect(() => {
+    console.log('Comment form toggled to:', showCommentForm);
+  }, [showCommentForm]);
+
   const handleCommentToggle = () => {
+    console.log('Comment button clicked');
     setShowCommentForm(prev => !prev);
-    console.log('Comment form toggled:', showCommentForm);
   };
 
   const handleCommentSubmit = async (e) => {
