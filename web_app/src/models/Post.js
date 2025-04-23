@@ -10,6 +10,10 @@ const commentSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
+  username: {
+    type: String,
+    required: true
+  },
   date: {
     type: Date,
     default: Date.now

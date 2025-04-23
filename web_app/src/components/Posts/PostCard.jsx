@@ -24,7 +24,6 @@ const PostCard = ({ post }) => {
       username: user.username, 
       date: new Date()
     };
-
     try {
       const response = await axios.post(`http://localhost:5000/api/posts/${post._id}/comments`, newComment);
       if (response.data && response.data.post.comments) {
@@ -41,7 +40,7 @@ const PostCard = ({ post }) => {
       setCommentLoading(false);
     }
   };
-
+  
   return (
     <div className="post-card">
       <div className="post-header">
@@ -64,13 +63,13 @@ const PostCard = ({ post }) => {
             onChange={(e) => setCommentText(e.target.value)}
             placeholder="Write your comment here..."
             rows="3"
-          />
+            />
           {commentError && <div className="error">{commentError}</div>}
           <button
             type="submit"
             className="submit-comment-button"
             disabled={commentLoading}
-          >
+            >
             {commentLoading ? 'Posting...' : 'Submit Comment'}
           </button>
         </form>
@@ -82,6 +81,7 @@ const PostCard = ({ post }) => {
               {console.log('Comment:', com)}
               <div className="comment-username">By {com._id}</div>
               <div className="comment-content">{com.comment}</div>
+              {console.log(comments)}
               <span className="comment-date">
                 {new Date(com.date).toLocaleDateString()}
               </span>
