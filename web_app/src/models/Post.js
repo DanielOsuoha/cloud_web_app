@@ -1,11 +1,19 @@
 import mongoose from 'mongoose';
 
 const commentSchema = new mongoose.Schema({
-  comment: {
+  content: {
     type: String,
     required: true
   },
-  date: {
+  author: {
+    type: String,
+    required: true
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  updatedAt: {
     type: Date,
     default: Date.now
   }
@@ -24,8 +32,7 @@ const postSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
-  comments: [commentSchema] // Add comments as an array of subdocuments
+  comments: [commentSchema]
 });
 
-const Post = mongoose.model('Post', postSchema);
-export default Post;
+export default mongoose.model('Post', postSchema);

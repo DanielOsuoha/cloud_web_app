@@ -19,13 +19,18 @@ const PostCard = ({ post }) => {
     try {
       const response = await axios.post(`http://localhost:5000/api/posts/${post._id}/comments`, {
         comment: commentText,
+        username: post.author // Or get the current user's username from your auth context
       });
       console.log('Comment added:', response.data);
       
       if (response.data.post && response.data.post.comments) {
         setComments(response.data.post.comments);
       } else {
-        setComments(prev => [...prev, { comment: commentText, date: new Date() }]);
+        setComments(prev => [...prev, { 
+          comment: commentText, 
+          date: new Date(),
+          username: post.author // Or get the current user's username
+        }]);
       }
       setCommentText('');
       setShowCommentForm(false);
@@ -74,7 +79,8 @@ const PostCard = ({ post }) => {
         <div className="comments-section">
           {comments.map((com, index) => (
             <div key={index} className="comment-item">
-              <p>{com.comment}</p>
+              <div className="comment-username">[{com.username || 'Anonymous'}]</div>
+              <div className="comment-content">{com.comment}</div>
               <span className="comment-date">
                 {new Date(com.date).toLocaleDateString()}
               </span>

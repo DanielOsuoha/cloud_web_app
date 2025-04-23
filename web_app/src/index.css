@@ -533,3 +533,32 @@ button:focus-visible {
 .submit-comment-button:hover {
   background-color: #2d8645;
 }
+
+/* Comment Item */
+.comment-item {
+  position: relative;
+  padding: 10px;
+  margin-bottom: 10px;
+  background-color: #f8f8f8;
+  border-radius: 4px;
+}
+
+.comment-username {
+  font-size: 0.6em;
+  font-weight: bold;
+  color: #666;
+  margin-bottom: 5px;
+}
+
+.comment-content {
+  margin: 8px 0;
+}
+
+.comment-date {
+  position: absolute;
+  bottom: 5px;
+  right: 10px;
+  font-size: 0.6em;
+  font-style: italic;
+  color: #888;
+}
