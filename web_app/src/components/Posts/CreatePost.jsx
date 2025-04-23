@@ -5,15 +5,19 @@ import AuthRequired from '../Auth/AuthRequired';
 
 const CreatePost = () => {
   const [content, setContent] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
   const { isLoggedIn, token } = useContext(AuthContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrorMsg('');
     if (!isLoggedIn) {
       navigate('/login');
       return;
     }
+    setIsSubmitting(true);
     try {
       const response = await fetch('http://localhost:5000/api/posts', {
         method: 'POST',
@@ -31,12 +35,15 @@ const CreatePost = () => {
       setContent('');
     } catch (error) {
       console.error('Error:', error);
+      setErrorMsg(error.message);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   if (!isLoggedIn) {
     return (
-      <div>
+      <div className="create-post-container">
         <AuthRequired message="Please login to create a post" />
         <p>
           Forgot your password? <Link to="/forgot-password">Reset it here</Link>
@@ -46,15 +53,19 @@ const CreatePost = () => {
   }
 
   return (
-    <div className="create-post">
-      <form onSubmit={handleSubmit}>
+    <div className="create-post-container">
+      <form className="create-post-form" onSubmit={handleSubmit}>
         <textarea
+          className="create-post-textarea"
           value={content}
           onChange={(e) => setContent(e.target.value)}
           placeholder="What's on your mind?"
           rows="4"
         />
-        <button type="submit">Post</button>
+        {errorMsg && <p className="error-message">{errorMsg}</p>}
+        <button className="create-post-button" type="submit" disabled={isSubmitting}>
+          {isSubmitting ? 'Posting...' : 'Post'}
+        </button>
       </form>
     </div>
   );

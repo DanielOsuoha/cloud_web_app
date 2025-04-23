@@ -1,10 +1,8 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import Landing from './components/Landing'
-import Login from './components/Auth/Login'
-import SignUp from './components/Auth/SignUp'
-import { AuthProvider } from './context/AuthContext';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Landing from './components/Landing';
+import Login from './components/Auth/Login';
+import SignUp from './components/Auth/SignUp';
 
 function App() {
   return (
@@ -17,19 +15,7 @@ function App() {
         </Routes>
       </div>
     </Router>
-  )
+  );
 }
 
-export default App
-
-import React from 'react';
-import ReactDOM from 'react-dom';
-import App from './App';
-import { AuthProvider } from './context/AuthContext';
-
-ReactDOM.render(
-  <AuthProvider>
-    <App />
-  </AuthProvider>,
-  document.getElementById('root')
-);
+export default App;
