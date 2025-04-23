@@ -33,6 +33,7 @@ const CreatePost = () => {
       const data = await response.json();
       console.log('New post:', data);
       setContent('');
+      window.location.reload();
     } catch (error) {
       console.error('Error:', error);
       setErrorMsg(error.message);

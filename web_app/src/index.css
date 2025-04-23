@@ -339,3 +339,54 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+/* Create Post Area Styles */
+.create-post-container {
+  max-width: 600px;
+  min-width: 60vw;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #ffffff; /* white background for contrast */
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.create-post-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.create-post-textarea {
+  width: 100%;
+  min-height: 170px;
+  resize: vertical;
+  padding: 12px;
+  font-size: 16px;
+  color: #333;             /* dark text for readability */
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 12px;
+  background-color: #f9f9f9; /* light background for the textarea */
+}
+
+.create-post-button {
+  align-self: flex-end;
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 4px;
+  background-color: #007bff; /* a pleasing blue */
+  color: #ffffff;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.create-post-button:hover:not(:disabled) {
+  background-color: #0056b3;
+  transform: scale(1.02);
+}
+
+.create-post-button:disabled {
+  background-color: #999;
+  cursor: not-allowed;
+}
