@@ -76,6 +76,22 @@ app.post('/api/posts/:postId/comments', async (req, res) => {
   }
 });
 
+app.get('/api/posts/:postId/comments', async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({ error: 'Post not found' });
+    }
+    console.log('Fetching comments for post:', postId);
+    console.log('Found comments:', post.comments);
+    res.json({ comments: post.comments });
+  } catch (error) {
+    console.error('Error fetching comments:', error);
+    res.status(500).json({ error: 'Error fetching comments' });
+  }
+});
+
 app.post('/api/users/signup', async (req, res) => {
   try {
     const { username, email, password } = req.body;

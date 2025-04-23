@@ -1,18 +1,9 @@
 import mongoose from 'mongoose';
 
 const commentSchema = new mongoose.Schema({
-  comment: {
-    type: String,
-    required: true
-  },
-  username: {
-    type: String,
-    required: true
-  },
-  date: {
-    type: Date,
-    default: Date.now
-  }
+  comment: String,
+  username: String, // Add username field
+  date: { type: Date, default: Date.now }
 });
 
 const postSchema = new mongoose.Schema({

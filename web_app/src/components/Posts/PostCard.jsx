@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
+import { AuthContext } from '../../context/AuthContext';
 
 const PostCard = ({ post }) => {
+  const { user } = useContext(AuthContext);
   const [showCommentForm, setShowCommentForm] = useState(false);
   const [commentText, setCommentText] = useState('');
   const [commentLoading, setCommentLoading] = useState(false);
@@ -19,19 +21,14 @@ const PostCard = ({ post }) => {
     
     const newComment = {
       comment: commentText,
-      username: post.author,
+      username: user.username, // Use logged-in user's username instead of post.author
       date: new Date()
     };
+    console.log('Submitting comment:', newComment);
 
     try {
-      const response = await axios.post(`http://localhost:5000/api/posts/${post._id}/comments`, newComment);
-      console.log('Comment added:', response.data);
-      
-      if (response.data.post && response.data.post.comments) {
-        setComments(response.data.post.comments);
-      } else {
-        setComments(prev => [...prev, newComment]);
-      }
+      await axios.post(`http://localhost:5000/api/posts/${post._id}/comments`, newComment);
+      await fetchComments(); 
       setCommentText('');
       setShowCommentForm(false);
     } catch (error) {
@@ -41,6 +38,23 @@ const PostCard = ({ post }) => {
       setCommentLoading(false);
     }
   };
+
+  const fetchComments = async () => {
+    try {
+      console.log('Fetching comments for post:', post._id);
+      const response = await axios.get(`http://localhost:5000/api/posts/${post._id}/comments`);
+      console.log('Response:', response.data);
+      if (response.data && response.data.comments) {
+        setComments(response.data.comments);
+      }
+    } catch (error) {
+      console.error('Error fetching comments:', error.response?.data || error.message);
+    }
+  };
+
+  useEffect(() => {
+    fetchComments();
+  }, [post._id]);
 
   return (
     <div className="post-card">
