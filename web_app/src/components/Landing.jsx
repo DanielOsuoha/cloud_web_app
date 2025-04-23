@@ -14,11 +14,15 @@ const Landing = () => {
   return (
     <div className="landing-container">
       <header className="landing-header">
+        {isLoggedIn && (
+          <div className="logout-container">
+            <LogoutButton />
+          </div>
+        )}
         {isLoggedIn ? (
           <>
             <h1>Welcome, {firstName}!</h1>
             <p>Share your thoughts with the world</p>
-            <LogoutButton />
           </>
         ) : (
           <>

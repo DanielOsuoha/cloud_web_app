@@ -76,9 +76,16 @@ button:focus-visible {
 }
 
 .landing-header {
+  position: relative;
   width: 100%;
   text-align: center;
   padding: 40px 0;
+}
+
+.logout-container {
+  position: absolute;
+  top: 20px;
+  right: 20px;
 }
 
 .landing-header h1 {
@@ -473,7 +480,7 @@ button:focus-visible {
 }
 
 .logout-button {
-  background-color: #d9534f;
+  background-color: #095b08;
   color: white;
   border: none;
   padding: 8px 12px;
