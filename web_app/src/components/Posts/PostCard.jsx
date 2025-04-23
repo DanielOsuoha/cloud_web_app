@@ -18,18 +18,21 @@ const PostCard = ({ post }) => {
     setCommentLoading(true);
     try {
       const response = await axios.post(`http://localhost:5000/api/posts/${post._id}/comments`, {
-        comment: commentText,
-        username: post.author 
+        content: commentText,
+        author: post.author,
+        createdAt: new Date(),
+        updatedAt: new Date()
       });
       console.log('Comment added:', response.data);
       
       if (response.data.post && response.data.post.comments) {
         setComments(response.data.post.comments);
       } else {
-        setComments(prev => [...prev, { 
-          comment: commentText, 
-          date: new Date(),
-          username: post.author // Or get the current user's username
+        setComments(prev => [...prev, {
+          content: commentText,
+          author: post.author,
+          createdAt: new Date(),
+          updatedAt: new Date()
         }]);
       }
       setCommentText('');
@@ -77,12 +80,12 @@ const PostCard = ({ post }) => {
       )}
       {comments.length > 0 && (
         <div className="comments-section">
-          {comments.map((com, index) => (
+          {comments.map((comment, index) => (
             <div key={index} className="comment-item">
-              <div className="comment-username">[{com.username || 'Anonymous'}]</div>
-              <div className="comment-content">{com.comment}</div>
+              <div className="comment-username">[{comment.author || 'Anonymous'}]</div>
+              <div className="comment-content">{comment.content}</div>
               <span className="comment-date">
-                {new Date(com.date).toLocaleDateString()}
+                {new Date(comment.createdAt).toLocaleDateString()}
               </span>
             </div>
           ))}
