@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const PostCard = ({ post }) => {
@@ -9,10 +9,13 @@ const PostCard = ({ post }) => {
   // Initialize with any existing comments from the post
   const [comments, setComments] = useState(post.comments || []);
 
+  // Debug: log commentText changes
+  useEffect(() => {
+    console.log('Current commentText:', commentText);
+  }, [commentText]);
+
   const handleCommentToggle = () => {
-    console.log('Comment button clicked');
     setShowCommentForm(prev => !prev);
-    console.log('Comment form toggled:', showCommentForm);
   };
 
   const handleCommentSubmit = async (e) => {
@@ -72,7 +75,9 @@ const PostCard = ({ post }) => {
           {comments.map((com, index) => (
             <div key={index} className="comment-item">
               <p>{com.comment}</p>
-              <span className="comment-date">{new Date(com.date).toLocaleDateString()}</span>
+              <span className="comment-date">
+                {new Date(com.date).toLocaleDateString()}
+              </span>
             </div>
           ))}
         </div>
