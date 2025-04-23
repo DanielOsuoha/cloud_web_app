@@ -19,7 +19,7 @@ const PostCard = ({ post }) => {
     try {
       const response = await axios.post(`http://localhost:5000/api/posts/${post._id}/comments`, {
         comment: commentText,
-        username: post.author // Or get the current user's username from your auth context
+        username: post.author 
       });
       console.log('Comment added:', response.data);
       
