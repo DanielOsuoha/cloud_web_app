@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import AuthRequired from '../Auth/AuthRequired';
 
 const CreatePost = () => {
@@ -18,7 +18,14 @@ const CreatePost = () => {
   };
 
   if (!isLoggedIn) {
-    return <AuthRequired message="Please login to create a post" />;
+    return (
+      <div>
+        <AuthRequired message="Please login to create a post" />
+        <p>
+          Forgot your password? <Link to="/forgot-password">Reset it here</Link>
+        </p>
+      </div>
+    );
   }
 
   return (

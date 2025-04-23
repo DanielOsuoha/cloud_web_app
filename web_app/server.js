@@ -4,6 +4,7 @@ import cors from 'cors';
 import Post from './src/models/Post.js';
 import bcrypt from 'bcryptjs';
 import User from './src/models/User.js';
+import crypto from 'crypto';
 
 const app = express();
 app.use(cors());
@@ -12,7 +13,6 @@ app.use(express.json());
 mongoose.connect('mongodb://localhost:27017/social_app')
   .then(() => console.log('Connected to local MongoDB'))
   .catch(err => console.error('MongoDB connection error:', err));
-
 
 app.post('/api/posts', async (req, res) => {
   try {
@@ -29,7 +29,6 @@ app.post('/api/posts', async (req, res) => {
   }
 });
 
-// Route to get all posts
 app.get('/api/posts', async (req, res) => {
   try {
     const posts = await Post.find().sort({ date: -1 });
@@ -46,14 +45,10 @@ app.post('/api/users/signup', async (req, res) => {
     const { username, email, password } = req.body;
     const existingUser = await User.findOne({ $or: [{ email }, { username }] });
     if (existingUser) {
-      return res.status(400).json({ 
-        error: 'User already exists with that email or username' 
-      });
+      return res.status(400).json({ error: 'User already exists with that email or username' });
     }
-
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
-
     const user = new User({
       username,
       email,
@@ -66,7 +61,6 @@ app.post('/api/users/signup', async (req, res) => {
       username: user.username,
       email: user.email
     };
-
     res.status(201).json(userResponse);
   } catch (error) {
     console.error('Signup error:', error);
@@ -77,27 +71,71 @@ app.post('/api/users/signup', async (req, res) => {
 app.post('/api/users/login', async (req, res) => {
   try {
     const { email, password } = req.body;
-
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ error: 'Invalid email or password' });
     }
-
     const isValidPassword = await bcrypt.compare(password, user.password);
     if (!isValidPassword) {
       return res.status(400).json({ error: 'Invalid email or password' });
     }
-
     const userResponse = {
       id: user._id,
       username: user.username,
       email: user.email
     };
-
     res.json(userResponse);
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ error: 'Error logging in' });
+  }
+});
+
+app.post('/api/users/update-password', async (req, res) => {
+  try {
+    const { email, currentPassword, newPassword } = req.body;
+    if (!email || !currentPassword || !newPassword) {
+      return res.status(400).json({ error: 'Email, current password, and new password are required' });
+    }
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    const isValidPassword = await bcrypt.compare(currentPassword, user.password);
+    if (!isValidPassword) {
+      return res.status(400).json({ error: 'Invalid current password' });
+    }
+    const salt = await bcrypt.genSalt(10);
+    const hashedNewPassword = await bcrypt.hash(newPassword, salt);
+    user.password = hashedNewPassword;
+    await user.save();
+    console.log(`Password updated for user: ${user.email}`);
+    res.json({ message: 'Password updated successfully' });
+  } catch (error) {
+    console.error('Error updating password:', error);
+    res.status(500).json({ error: 'Error updating password' });
+  }
+});
+
+app.post('/api/users/forgot-password', async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ error: 'Email is required' });
+    }
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    const resetToken = crypto.randomBytes(20).toString('hex');
+    user.resetPasswordToken = resetToken;
+    user.resetPasswordExpires = Date.now() + 3600000;
+    await user.save();
+    console.log(`Password reset token for ${user.email}: ${resetToken}`);
+    res.json({ message: 'Password reset token has been sent to your email' });
+  } catch (error) {
+    console.error('Error in forgot-password:', error);
+    res.status(500).json({ error: 'Error processing forgot password' });
   }
 });
 
