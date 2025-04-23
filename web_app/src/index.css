@@ -493,3 +493,42 @@ button:focus-visible {
 .logout-button:hover {
   background-color: #c9302c;
 }
+
+/* Style for the comment form container */
+.comment-form {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background-color: #f8f8f8;
+  padding: 15px;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Style for the text area */
+.comment-textarea {
+  width: 100%;
+  padding: 10px;
+  font-size: 14px;
+  resize: vertical;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+}
+
+/* Style for the submit button */
+.submit-comment-button {
+  align-self: flex-end;
+  background-color: #34a853;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.submit-comment-button:hover {
+  background-color: #2d8645;
+}
