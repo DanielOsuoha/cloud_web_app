@@ -28,10 +28,12 @@ const Landing = () => {
 
       <section className="posts-feed">
         <div className="posts-header">
-          <h2>Recent Posts</h2>
           <CreatePost />
         </div>
-        <PostList />
+        <div className="posts-list">
+          <h2>Recent Posts</h2>
+          <PostList />
+        </div>
       </section>
     </div>
   );
