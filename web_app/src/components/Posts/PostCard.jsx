@@ -21,14 +21,18 @@ const PostCard = ({ post }) => {
     
     const newComment = {
       comment: commentText,
-      username: user.username, // Use logged-in user's username instead of post.author
+      username: user.username, 
       date: new Date()
     };
-    console.log('Submitting comment:', newComment);
 
     try {
-      await axios.post(`http://localhost:5000/api/posts/${post._id}/comments`, newComment);
-      await fetchComments(); 
+      const response = await axios.post(`http://localhost:5000/api/posts/${post._id}/comments`, newComment);
+      // Update local state directly with the new comment
+      if (response.data && response.data.post.comments) {
+        setComments(response.data.post.comments);
+      } else {
+        setComments(prevComments => [...prevComments, newComment]);
+      }
       setCommentText('');
       setShowCommentForm(false);
     } catch (error) {
@@ -42,7 +46,17 @@ const PostCard = ({ post }) => {
   const fetchComments = async () => {
     try {
       console.log('Fetching comments for post:', post._id);
-      const response = await axios.get(`http://localhost:5000/api/posts/${post._id}/comments`);
+      const token = localStorage.getItem('token'); // Get token from localStorage
+      const config = {
+        headers: { 
+          Authorization: token
+        }
+      };
+      
+      const response = await axios.get(
+        `http://localhost:5000/api/posts/${post._id}/comments`,
+        config
+      );
       console.log('Response:', response.data);
       if (response.data && response.data.comments) {
         setComments(response.data.comments);

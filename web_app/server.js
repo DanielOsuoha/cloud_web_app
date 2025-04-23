@@ -58,15 +58,22 @@ app.get('/api/posts', async (req, res) => {
   }
 });
 
-app.post('/api/posts/:postId/comments', async (req, res) => {
+app.post('/api/posts/:postId/comments', auth, async (req, res) => {
   try {
     const { postId } = req.params;
     const { comment } = req.body;
     const post = await Post.findById(postId);
+    
     if (!post) {
       return res.status(404).json({ error: 'Post not found' });
     }
-    const newComment = { comment, date: new Date() };
+
+    const newComment = {
+      comment,
+      username: req.user.username, // Get username from authenticated user
+      date: new Date()
+    };
+
     post.comments.push(newComment);
     await post.save();
     res.json({ message: 'Comment added successfully', post });
@@ -76,13 +83,15 @@ app.post('/api/posts/:postId/comments', async (req, res) => {
   }
 });
 
-app.get('/api/posts/:postId/comments', async (req, res) => {
+app.get('/api/posts/:postId/comments', auth, async (req, res) => {
   try {
     const { postId } = req.params;
     const post = await Post.findById(postId);
+    
     if (!post) {
       return res.status(404).json({ error: 'Post not found' });
     }
+
     console.log('Fetching comments for post:', postId);
     console.log('Found comments:', post.comments);
     res.json({ comments: post.comments });
