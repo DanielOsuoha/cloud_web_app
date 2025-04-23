@@ -2,12 +2,13 @@ import React, { useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import PostList from './Posts/PostList';
 import CreatePost from './Posts/CreatePost';
+import LogoutButton from './Auth/LogoutButton';
 
 const Landing = () => {
   const { isLoggedIn, user } = useContext(AuthContext);
   const firstName =
     isLoggedIn && user
-      ? user.username.charAt(0).toUpperCase() + user.username.slice(1).toLowerCase()
+      ? user.username.toUpperCase()
       : 'GUEST';
 
   return (
@@ -17,6 +18,7 @@ const Landing = () => {
           <>
             <h1>Welcome, {firstName}!</h1>
             <p>Share your thoughts with the world</p>
+            <LogoutButton />
           </>
         ) : (
           <>

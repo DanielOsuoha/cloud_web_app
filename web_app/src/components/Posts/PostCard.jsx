@@ -11,6 +11,7 @@ const PostCard = ({ post }) => {
 
   const handleCommentToggle = () => {
     setShowCommentForm(prev => !prev);
+    console.log('Comment form toggled:', showCommentForm);
   };
 
   const handleCommentSubmit = async (e) => {
