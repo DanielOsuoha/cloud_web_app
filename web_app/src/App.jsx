@@ -1,7 +1,10 @@
+import React from 'react';
+import ReactDOM from 'react-dom';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Landing from './components/Landing'
 import Login from './components/Auth/Login'
 import SignUp from './components/Auth/SignUp'
+import { AuthProvider } from './context/AuthContext';
 
 function App() {
   return (
@@ -16,5 +19,12 @@ function App() {
     </Router>
   )
 }
+
+ReactDOM.render(
+  <AuthProvider>
+    <App />
+  </AuthProvider>,
+  document.getElementById('root')
+);
 
 export default App
