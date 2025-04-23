@@ -19,10 +19,9 @@ const PostCard = ({ post }) => {
     setCommentError('');
     setCommentLoading(true);
     
-    // Ensure comment object matches your schema
     const newComment = {
       comment: commentText,
-      user: user._id,       // MongoDB ObjectId reference
+      user: user._id,    
       username: user.username,
       date: new Date()
     };
