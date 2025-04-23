@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import PostCard from './PostCard';
 
 const PostList = () => {
   const [posts, setPosts] = useState([]);
@@ -28,16 +29,7 @@ const PostList = () => {
   return (
     <div className="posts-grid">
       {posts.map(post => (
-        <div key={post._id} className="post-card">
-          <div className="post-header">
-            <span className="post-author">{post.author}</span>
-            <span className="post-date">
-              {new Date(post.date).toLocaleDateString()}
-            </span>
-          </div>
-          <div className="post-content">{post.content}</div>
-          <button className="comment-button">Comment</button>
-        </div>
+        <PostCard key={post._id} post={post} />
       ))}
     </div>
   );
