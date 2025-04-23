@@ -58,6 +58,24 @@ app.get('/api/posts', async (req, res) => {
   }
 });
 
+app.post('/api/posts/:postId/comments', async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const { comment } = req.body;
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({ error: 'Post not found' });
+    }
+    const newComment = { comment, date: new Date() };
+    post.comments.push(newComment);
+    await post.save();
+    res.json({ message: 'Comment added successfully', post });
+  } catch (error) {
+    console.error('Error adding comment:', error);
+    res.status(500).json({ error: 'Error adding comment' });
+  }
+});
+
 app.post('/api/users/signup', async (req, res) => {
   try {
     const { username, email, password } = req.body;
