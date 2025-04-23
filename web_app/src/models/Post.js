@@ -1,19 +1,15 @@
 import mongoose from 'mongoose';
 
 const commentSchema = new mongoose.Schema({
-  content: {
+  comment: {
     type: String,
     required: true
   },
-  author: {
+  username: {
     type: String,
     required: true
   },
-  createdAt: {
-    type: Date,
-    default: Date.now
-  },
-  updatedAt: {
+  date: {
     type: Date,
     default: Date.now
   }
