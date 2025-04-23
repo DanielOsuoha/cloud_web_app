@@ -2,19 +2,23 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const PostCard = ({ post }) => {
+  // State for the main post content
+  const [postText, setPostText] = useState(post.content);
+  // State for toggling the comment form and handling the comment input
   const [showCommentForm, setShowCommentForm] = useState(false);
   const [commentText, setCommentText] = useState('');
   const [commentLoading, setCommentLoading] = useState(false);
   const [commentError, setCommentError] = useState('');
-  // Initialize with any existing comments from the post
+  // State for holding existing comments
   const [comments, setComments] = useState(post.comments || []);
 
-  // Debug: log commentText changes
+  // Optionally, log commentText changes for debugging
   useEffect(() => {
     console.log('Current commentText:', commentText);
   }, [commentText]);
 
   const handleCommentToggle = () => {
+    console.log('Comment button clicked');
     setShowCommentForm(prev => !prev);
   };
 
@@ -27,12 +31,14 @@ const PostCard = ({ post }) => {
         comment: commentText,
       });
       console.log('Comment added:', response.data);
-      
+      // If the backend returns the updated post with comments, use that
       if (response.data.post && response.data.post.comments) {
         setComments(response.data.post.comments);
       } else {
+        // Otherwise, append the new comment locally
         setComments(prev => [...prev, { comment: commentText, date: new Date() }]);
       }
+      // Clear the comment input using setCommentText
       setCommentText('');
       setShowCommentForm(false);
     } catch (error) {
@@ -47,10 +53,12 @@ const PostCard = ({ post }) => {
     <div className="post-card">
       <div className="post-header">
         <span className="post-author">{post.author}</span>
-        <span className="post-date">{new Date(post.date).toLocaleDateString()}</span>
+        <span className="post-date">
+          {new Date(post.date).toLocaleDateString()}
+        </span>
       </div>
       <div className="post-content">
-        <p>{post.content}</p>
+        <p>{postText}</p>
       </div>
       <button className="comment-button" onClick={handleCommentToggle}>
         Comment
@@ -65,7 +73,11 @@ const PostCard = ({ post }) => {
             rows="3"
           />
           {commentError && <div className="error">{commentError}</div>}
-          <button type="submit" className="submit-comment-button" disabled={commentLoading}>
+          <button
+            type="submit"
+            className="submit-comment-button"
+            disabled={commentLoading}
+          >
             {commentLoading ? 'Posting...' : 'Submit Comment'}
           </button>
         </form>

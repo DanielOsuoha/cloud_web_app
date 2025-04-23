@@ -515,6 +515,7 @@ button:focus-visible {
   border: 1px solid #ccc;
   border-radius: 4px;
   background-color: #fff;
+  color: #000;      /* Ensure text is visible */
 }
 
 /* Style for the submit button */
