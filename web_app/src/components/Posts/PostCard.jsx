@@ -19,17 +19,30 @@ const PostCard = ({ post }) => {
     setCommentError('');
     setCommentLoading(true);
     
+    // Ensure comment object matches your schema
     const newComment = {
       comment: commentText,
-      username: user.username, 
+      user: user._id,       // MongoDB ObjectId reference
+      username: user.username,
       date: new Date()
     };
+
     try {
-      const response = await axios.post(`http://localhost:5000/api/posts/${post._id}/comments`, newComment);
+      const token = localStorage.getItem('token');
+      const config = {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      };
+
+      const response = await axios.post(
+        `http://localhost:5000/api/posts/${post._id}/comments`, 
+        newComment,
+        config
+      );
+
       if (response.data && response.data.post.comments) {
         setComments(response.data.post.comments);
-      } else {
-        setComments(prevComments => [...prevComments, newComment]);
       }
       setCommentText('');
       setShowCommentForm(false);
@@ -78,13 +91,14 @@ const PostCard = ({ post }) => {
         <div className="comments-section">
           {comments.map((com, index) => (
             <div key={index} className="comment-item">
-              {console.log('Comment:', com)}
-              <div className="comment-username">By {com._id}</div>
+              <div className="comment-header">
+                {console.log(com)}
+                <div className="comment-username">By {com.username}</div>
+                <span className="comment-date">
+                  {new Date(com.date).toLocaleDateString()}
+                </span>
+              </div>
               <div className="comment-content">{com.comment}</div>
-              {console.log(comments)}
-              <span className="comment-date">
-                {new Date(com.date).toLocaleDateString()}
-              </span>
             </div>
           ))}
         </div>

@@ -70,7 +70,8 @@ app.post('/api/posts/:postId/comments', auth, async (req, res) => {
 
     const newComment = {
       comment,
-      username: req.user.username, // Get username from authenticated user
+      user: req.user.id,         // Add user ID reference
+      username: req.user.username, // Keep username for direct access
       date: new Date()
     };
 
@@ -91,9 +92,6 @@ app.get('/api/posts/:postId/comments', auth, async (req, res) => {
     if (!post) {
       return res.status(404).json({ error: 'Post not found' });
     }
-
-    console.log('Fetching comments for post:', postId);
-    console.log('Found comments:', post.comments);
     res.json({ comments: post.comments });
   } catch (error) {
     console.error('Error fetching comments:', error);
