@@ -1,20 +1,37 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { AuthContext } from '../../context/AuthContext';
 import AuthRequired from '../Auth/AuthRequired';
 
 const CreatePost = () => {
   const [content, setContent] = useState('');
   const navigate = useNavigate();
-  const isLoggedIn = false; 
+  const { isLoggedIn, token } = useContext(AuthContext);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!isLoggedIn) {
       navigate('/login');
       return;
     }
-    console.log('New post:', content);
-    setContent('');
+    try {
+      const response = await fetch('http://localhost:5000/api/posts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token
+        },
+        body: JSON.stringify({ content })
+      });
+      if (!response.ok) {
+        throw new Error('Failed to create post');
+      }
+      const data = await response.json();
+      console.log('New post:', data);
+      setContent('');
+    } catch (error) {
+      console.error('Error:', error);
+    }
   };
 
   if (!isLoggedIn) {
