@@ -5,7 +5,7 @@ import AuthRequired from '../Auth/AuthRequired';
 const CreatePost = () => {
   const [content, setContent] = useState('');
   const navigate = useNavigate();
-  const isLoggedIn = false; // Replace with your auth logic
+  const isLoggedIn = false; 
 
   const handleSubmit = (e) => {
     e.preventDefault();

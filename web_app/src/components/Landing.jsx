@@ -13,17 +13,10 @@ const Landing = () => {
       <section className="posts-feed">
         <div className="posts-header">
           <h2>Recent Posts</h2>
-          <CreatePost />
+          <CreatePost/>
         </div>
         <PostList />
       </section>
-
-      <aside className="sidebar">
-        <div className="auth-buttons">
-          <button className="login-btn">Login</button>
-          <button className="signup-btn">Sign Up</button>
-        </div>
-      </aside>
     </div>
   );
 };

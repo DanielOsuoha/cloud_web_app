@@ -13,7 +13,7 @@ mongoose.connect('mongodb://localhost:27017/social_app')
   .then(() => console.log('Connected to local MongoDB'))
   .catch(err => console.error('MongoDB connection error:', err));
 
-// Test route to create a post
+
 app.post('/api/posts', async (req, res) => {
   try {
     const post = new Post({

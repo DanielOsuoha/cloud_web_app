@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './auth.css';
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -18,6 +19,7 @@ const SignUp = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     // Add signup logic here
+    //save the info in the formData to the user model from models
     console.log('Signup attempt:', formData);
   };
 
