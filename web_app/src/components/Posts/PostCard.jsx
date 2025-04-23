@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useContext } from 'react'; // Remove useEffect
 import axios from 'axios';
 import { AuthContext } from '../../context/AuthContext';
 
@@ -27,7 +27,6 @@ const PostCard = ({ post }) => {
 
     try {
       const response = await axios.post(`http://localhost:5000/api/posts/${post._id}/comments`, newComment);
-      // Update local state directly with the new comment
       if (response.data && response.data.post.comments) {
         setComments(response.data.post.comments);
       } else {
@@ -42,33 +41,6 @@ const PostCard = ({ post }) => {
       setCommentLoading(false);
     }
   };
-
-  const fetchComments = async () => {
-    try {
-      console.log('Fetching comments for post:', post._id);
-      const token = localStorage.getItem('token'); // Get token from localStorage
-      const config = {
-        headers: { 
-          Authorization: token
-        }
-      };
-      
-      const response = await axios.get(
-        `http://localhost:5000/api/posts/${post._id}/comments`,
-        config
-      );
-      console.log('Response:', response.data);
-      if (response.data && response.data.comments) {
-        setComments(response.data.comments);
-      }
-    } catch (error) {
-      console.error('Error fetching comments:', error.response?.data || error.message);
-    }
-  };
-
-  useEffect(() => {
-    fetchComments();
-  }, [post._id]);
 
   return (
     <div className="post-card">
@@ -108,7 +80,7 @@ const PostCard = ({ post }) => {
           {comments.map((com, index) => (
             <div key={index} className="comment-item">
               {console.log('Comment:', com)}
-              <div className="comment-username">{com.author}</div>
+              <div className="comment-username">By {com._id}</div>
               <div className="comment-content">{com.comment}</div>
               <span className="comment-date">
                 {new Date(com.date).toLocaleDateString()}
