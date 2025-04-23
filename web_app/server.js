@@ -5,6 +5,7 @@ import Post from './src/models/Post.js';
 import bcrypt from 'bcryptjs';
 import User from './src/models/User.js';
 import crypto from 'crypto';
+import jwt from 'jsonwebtoken';
 
 const app = express();
 app.use(cors());
@@ -14,10 +15,27 @@ mongoose.connect('mongodb://localhost:27017/social_app')
   .then(() => console.log('Connected to local MongoDB'))
   .catch(err => console.error('MongoDB connection error:', err));
 
-app.post('/api/posts', async (req, res) => {
+const JWT_SECRET = 'your_jwt_secret'; // Replace with environment variable in production
+
+// Authentication middleware to verify JWT token
+const auth = (req, res, next) => {
+  const token = req.headers.authorization;
+  if (!token) {
+    return res.status(401).json({ error: 'No token provided' });
+  }
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (error) {
+    return res.status(401).json({ error: 'Invalid token' });
+  }
+};
+
+app.post('/api/posts', auth, async (req, res) => {
   try {
     const post = new Post({
-      author: req.body.author || 'Anonymous',
+      author: req.user.username,
       content: req.body.content || 'Empty post'
     });
     await post.save();
@@ -79,12 +97,14 @@ app.post('/api/users/login', async (req, res) => {
     if (!isValidPassword) {
       return res.status(400).json({ error: 'Invalid email or password' });
     }
-    const userResponse = {
+    const userPayload = {
       id: user._id,
       username: user.username,
       email: user.email
     };
-    res.json(userResponse);
+    const token = jwt.sign(userPayload, JWT_SECRET, { expiresIn: '1h' });
+    // console.log(userPayload, token)
+    res.json({ user: userPayload, token });
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ error: 'Error logging in' });
