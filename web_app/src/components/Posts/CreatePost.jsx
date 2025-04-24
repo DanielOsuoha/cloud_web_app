@@ -1,3 +1,4 @@
+/* CreatePost.jsx */
 import React, { useState, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
@@ -13,23 +14,25 @@ const CreatePost = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMsg('');
+
     if (!isLoggedIn) {
       navigate('/login');
       return;
     }
+
     setIsSubmitting(true);
     try {
       const response = await fetch('http://localhost:5000/api/posts', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': token
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({ content })
       });
-      if (!response.ok) {
-        throw new Error('Failed to create post');
-      }
+
+      if (!response.ok) throw new Error('Failed to create post');
+
       const data = await response.json();
       console.log('New post:', data);
       setContent('');
