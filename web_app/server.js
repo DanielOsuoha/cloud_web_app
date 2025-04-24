@@ -65,8 +65,8 @@ app.post('/api/posts/:postId/comments', auth, async (req, res) => {
 
     const newComment = {
       comment,
-      user: req.user.id,         // Add user ID reference
-      username: req.user.username, // Keep username for direct access
+      user: req.user.id,
+      username: req.user.username,
       date: new Date()
     };
 
@@ -102,7 +102,7 @@ app.post('/api/users/signup', async (req, res) => {
       return res.status(400).json({ error: 'User already exists with that email or username' });
     }
     const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    const hashedPassword = await bcrypt.hash(password, salit);
     const user = new User({
       username,
       email,
@@ -195,25 +195,5 @@ app.post('/api/users/forgot-password', async (req, res) => {
   }
 });
 
-
-// app.post('/:id/comments', authenticateToken, async (req, res) => {
-//   try {
-//       const post = await Post.findById(req.params.id);
-//       if (!post) {
-//           return res.status(404).json({ message: 'Post not found' });
-//       }
-
-//       post.comments.push({
-//           comment: req.body.comment,
-//           author: req.user.username,  // From auth middleware
-//           date: new Date()
-//       });
-
-//       await post.save();
-//       res.status(201).json(post.comments[post.comments.length - 1]);
-//   } catch (error) {
-//       res.status(500).json({ message: error.message });
-//   }
-// });
 const PORT = 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
