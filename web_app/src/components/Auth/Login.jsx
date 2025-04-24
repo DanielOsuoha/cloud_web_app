@@ -23,7 +23,7 @@ const Login = () => {
     e.preventDefault();
     setErrorMsg('');
     try {
-      const response = await fetch('http://localhost:5000/api/users/login', {
+        const response = await fetch(`/api/users/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
@@ -34,7 +34,6 @@ const Login = () => {
         return;
       }
       const data = await response.json();
-      // data should contain { user, token }
       login(data.user, data.token);
       navigate('/');
     } catch (error) {
