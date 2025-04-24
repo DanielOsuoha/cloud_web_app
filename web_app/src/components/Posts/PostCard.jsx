@@ -27,32 +27,34 @@ const PostCard = ({ post }) => {
     };
 
     try {
-      const token = localStorage.getItem('token');
-      const config = {
-        headers: {
-          'Authorization': `Bearer ${token}`
+        const token = localStorage.getItem('token');
+        
+        if (!token) {
+            throw new Error('Please login to comment');
         }
-      };
 
-      const response = await axios.post(
-        `http://localhost:5000/api/posts/${post._id}/comments`, 
-        newComment,
-        config
-      );
+        const response = await axios.post(
+            `/api/posts/${post._id}/comments`,
+            { comment: commentText },
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            }
+        );
 
-      if (response.data && response.data.post.comments) {
-        setComments(response.data.post.comments);
+        // Update comments state
+        setPost(prev => ({
+            ...prev,
+            comments: [...prev.comments, response.data]
+        }));
+        setCommentText('');
+      } catch (error) {
+        console.error('Error posting comment:', error);
+        alert(error.response?.data?.message || 'Error posting comment');
       }
-      setCommentText('');
-      setShowCommentForm(false);
-    } catch (error) {
-      console.error('Error posting comment:', error);
-      setCommentError('Failed to post comment');
-    } finally {
-      setCommentLoading(false);
-    }
-  };
-  
+    };
+    
   return (
     <div className="post-card">
       <div className="post-header">
