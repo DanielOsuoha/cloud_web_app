@@ -11,6 +11,7 @@
     "deploy": "scp -i ~/.ssh/cloud_web_app.pem -r ./* ubuntu@34.205.144.114:/var/www/web_app/"
   },
   "dependencies": {
+    "aws-amplify": "^6.14.3",
     "axios": "^1.8.4",
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
@@ -23,14 +24,22 @@
     "react-router-dom": "^7.5.1"
   },
   "devDependencies": {
+    "@aws-amplify/backend": "^1.14.3",
+    "@aws-amplify/backend-cli": "^1.5.0",
     "@eslint/js": "^9.22.0",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
     "@vitejs/plugin-react": "^4.3.4",
+    "aws-cdk": "^2.1003.0",
+    "aws-cdk-lib": "^2.180.0",
+    "constructs": "^10.4.2",
+    "esbuild": "^0.25.3",
     "eslint": "^9.22.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^16.0.0",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.3",
     "vite": "^6.3.1"
   }
 }
