@@ -11,7 +11,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const MONGODB_URI = 'mongodb+srv://dosuoha:63SngoHHhZxYklc0@cluster0.1ziqjik.mongodb.net/social_app?retryWrites=true&w=majority&appName=Cluster0';
+const MONGODB_URI = process.env.MONGODB_URI;
+const JWT_SECRET = process.env.JWT_SECRET;
 
 mongoose.connect(MONGODB_URI, {
   serverApi: {
@@ -22,8 +23,6 @@ mongoose.connect(MONGODB_URI, {
 })
 .then(() => console.log('Connected to MongoDB Atlas'))
 .catch(err => console.error('MongoDB connection error:', err));
-
-const JWT_SECRET = 'yUAAhybM6URKP2ppYYLC0dEBlfqtELFnu5UUyeG6H0Bk='; 
 
 const auth = (req, res, next) => {
   const token = req.headers.authorization;
