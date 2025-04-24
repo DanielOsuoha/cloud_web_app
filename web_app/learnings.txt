@@ -1,0 +1,6 @@
+  --uri="mongodb+srv://dosuoha:<db_password></db_password>@cluster0.1ziqjik.mongodb.net/social_app" \
+  --nsInclude="social_app.*" \ 
+  /Users/daniel/Desktop/mongodb_backup/dump/social_app
+
+
+  //make sure to include --nsInclude (was giving errors initially)

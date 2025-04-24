@@ -11,13 +11,22 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-mongoose.connect('mongodb://localhost:27017/social_app')
-  .then(() => console.log('Connected to local MongoDB'))
-  .catch(err => console.error('MongoDB connection error:', err));
+const MONGODB_URI = 'mongodb+srv://dosuoha:63SngoHHhZxYklc0@cluster0.1ziqjik.mongodb.net/social_app?retryWrites=true&w=majority&appName=Cluster0';
 
-const JWT_SECRET = 'your_jwt_secret'; // Replace with environment variable in production
+mongoose.connect(MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  serverApi: {
+    version: '1',
+    strict: true,
+    deprecationErrors: true,
+  }
+})
+.then(() => console.log('Connected to MongoDB Atlas'))
+.catch(err => console.error('MongoDB connection error:', err));
 
-// Authentication middleware to verify JWT token
+const JWT_SECRET = 'your_jwt_secret'; 
+
 const auth = (req, res, next) => {
   const token = req.headers.authorization;
   if (!token) {

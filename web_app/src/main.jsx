@@ -13,3 +13,10 @@ root.render(
     </AuthProvider>
   </React.StrictMode>
 );
+
+
+//mongodb+srv://dosuoha:<db_password>@cluster0.1ziqjik.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+
+
+
+//63SngoHHhZxYklc0
