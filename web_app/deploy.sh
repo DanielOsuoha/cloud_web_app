@@ -8,21 +8,7 @@ KEY_PATH="$HOME/.ssh/cloud_web_app.pem"
 # Initial setup
 echo "🛠️  Setting up EC2 environment..."
 ssh -tt -i $KEY_PATH ubuntu@$EC2_HOST << 'EOF'
-    # Update system packages
-    sudo apt update
-    
-    # Install Node.js if not present
-    if ! command -v node &> /dev/null; then
-        curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-        sudo apt-get install -y nodejs
-    fi
-    
-    # Install PM2 if not present
-    if ! command -v pm2 &> /dev/null; then
-        sudo npm install -g pm2
-    fi
-    
-    # Create directory structure
+    # Create complete directory structure
     sudo mkdir -p /var/www/web_app/src/models
     sudo chown -R ubuntu:ubuntu /var/www/web_app
     exit
@@ -33,19 +19,15 @@ echo "🏗️  Building application..."
 npm run build
 
 echo "📦 Deploying to EC2..."
+# Copy files with proper structure
 scp -i $KEY_PATH -r \
     ./dist \
     ./server.js \
     ./package.json \
     ./ecosystem.config.cjs \
-    ./src/models/Post.js \
-    ./src/models/User.js \
     ubuntu@$EC2_HOST:$APP_DIR/
 
-# Create directory structure on EC2
-ssh -i $KEY_PATH ubuntu@$EC2_HOST "mkdir -p $APP_DIR/src/models"
-
-# Copy model files
+# Copy model files to correct location
 scp -i $KEY_PATH -r \
     ./src/models/* \
     ubuntu@$EC2_HOST:$APP_DIR/src/models/
@@ -53,6 +35,15 @@ scp -i $KEY_PATH -r \
 echo "🚀 Starting application..."
 ssh -tt -i $KEY_PATH ubuntu@$EC2_HOST << 'EOF'
     cd /var/www/web_app
+    
+    # Clean up any misplaced files
+    mv Post.js src/models/ 2>/dev/null || true
+    mv User.js src/models/ 2>/dev/null || true
+    
+    # Verify file structure
+    echo "\n📁 Checking file structure..."
+    tree . || ls -R
+    
     npm install --omit=dev
     pm2 delete all || true
     pm2 start ecosystem.config.cjs
