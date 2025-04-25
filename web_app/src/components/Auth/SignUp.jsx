@@ -34,15 +34,23 @@ const SignUp = () => {
         username: formData.username,
         email: formData.email,
         password: formData.password
+      }, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
 
-      if (response.data) {
-        console.log('Signup successful');
+      if (response.data.success) {
+        console.log('Signup successful:', response.data);
         navigate('/login');
       }
     } catch (error) {
-      console.error('Signup error:', error.response?.data || error.message);
-      setErrorMsg(error.response?.data?.error || 'Signup failed. Please try again.');
+      console.error('Signup error details:', {
+        message: error.response?.data?.error || error.message,
+        status: error.response?.status,
+        fullError: error.response?.data
+      });
+      setErrorMsg(error.response?.data?.error || 'Failed to create account. Please try again.');
     }
   };
 

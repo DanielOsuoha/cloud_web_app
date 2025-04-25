@@ -122,27 +122,27 @@ app.get('/api/posts/:postId/comments', auth, async (req, res) => {
 app.post('/api/users/signup', async (req, res) => {
   try {
     const { username, email, password } = req.body;
-    const existingUser = await User.findOne({ $or: [{ email }, { username }] });
-    if (existingUser) {
-      return res.status(400).json({ error: 'User already exists with that email or username' });
-    }
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salit);
+    console.log('Received signup request for:', email); // Add logging
+
+    // Create new user without requiring token
     const user = new User({
       username,
       email,
-      password: hashedPassword
+      password: await bcrypt.hash(password, 10)
     });
+
     await user.save();
-    console.log('New user created:', user);
-    const userResponse = {
-      id: user._id,
-      username: user.username,
-      email: user.email
-    };
-    res.status(201).json(userResponse);
+    res.status(201).json({
+      success: true,
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email
+      }
+    });
+
   } catch (error) {
-    console.error('Signup error:', error);
+    console.log('Detailed signup error:', error); 
     res.status(500).json({ error: 'Error creating user' });
   }
 });
