@@ -14,7 +14,7 @@ const CreatePost = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     setIsSubmitting(true);
-    
+    console.log(token)
     try {
       const response = await axios.post(
         'http://localhost:5000/api/posts',

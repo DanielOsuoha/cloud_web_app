@@ -24,17 +24,12 @@ A social media web application built with React and Node.js.
 npm install
 ```
 
-2. Start MongoDB locally:
-```bash
-mongosh
-```
-
-3. Start the backend server:
+2. Start the backend server:
 ```bash
 npm run server
 ```
 
-4. Start the React development server:
+3. Start the React development server:
 ```bash
 npm run dev
 ```
@@ -55,11 +50,41 @@ npm run dev
 Create a `.env` file in the root directory:
 ```
 PORT=5000
-MONGODB_URI=mongodb://localhost:27017/social_app
 JWT_SECRET=your_jwt_secret
 ```
 
-## Development
+## Database Setup
 
-Access the app at `http://localhost:5173`
-API runs at `http://localhost:5000`
+### Option 1: Local MongoDB
+1. Install MongoDB locally:
+```bash
+brew install mongodb-community
+```
+
+2. Start MongoDB service:
+```bash
+brew services start mongodb-community
+```
+
+3. Use local connection string:
+```
+MONGODB_URI=mongodb://localhost:27017/social_app
+```
+
+### Option 2: MongoDB Atlas
+1. Create free cluster at [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
+2. Get connection string from Atlas dashboard
+3. Replace `<password>` with your database password:
+```
+MONGODB_URI=mongodb+srv://username:<password>@cluster0.xxxxx.mongodb.net/social_app
+```
+
+### Verifying Connection
+```bash
+# Check database status
+mongosh
+> use social_app
+> show collections
+```
+
+**Note:** For production, always use MongoDB Atlas with proper security measures.
