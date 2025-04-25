@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './auth.css';
+import axios from 'axios';
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -29,27 +30,19 @@ const SignUp = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/users/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          username: formData.username,
-          email: formData.email,
-          password: formData.password
-        })
+        const response = await axios.post('http://localhost:5000/api/users/signup', {
+        username: formData.username,
+        email: formData.email,
+        password: formData.password
       });
 
-      if (!response.ok) {
-        const data = await response.json();
-        setErrorMsg(data.error || 'Failed to sign up');
-        return;
+      if (response.data) {
+        console.log('Signup successful');
+        navigate('/login');
       }
-
-      // On successful signup, navigate to login page (or auto-login as desired)
-      navigate('/login');
     } catch (error) {
-      console.error('Signup error:', error);
-      setErrorMsg('Signup failed. Please try again.');
+      console.error('Signup error:', error.response?.data || error.message);
+      setErrorMsg(error.response?.data?.error || 'Signup failed. Please try again.');
     }
   };
 
