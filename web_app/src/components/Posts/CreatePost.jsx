@@ -9,34 +9,31 @@ const CreatePost = () => {
   const [errorMsg, setErrorMsg] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
-  const { isLoggedIn, token } = useContext(AuthContext);
+  const { isLoggedIn, token } = useContext(AuthContext);  // Get token from context
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setIsSubmitting(true);
     
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/posts', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': token
-        },
-        body: JSON.stringify({ content })
-      });
+      const response = await axios.post(
+        'http://localhost:5000/api/posts',
+        { content },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': token  
+          }
+        }
+      );
 
-      const data = await response.json();
-      
-      if (response.ok) {
+      if (response.data) {
         setContent('');
         window.location.reload();
-      } else {
-        throw new Error(data.error || 'Failed to create post');
       }
     } catch (error) {
-      console.error('Post creation error:', error);
-      setErrorMsg(error.message || 'Failed to create post');
+      console.error('Post creation error:', error.response?.data || error);
+      setErrorMsg(error.response?.data?.error || 'Failed to create post');
     } finally {
       setIsSubmitting(false);
     }
