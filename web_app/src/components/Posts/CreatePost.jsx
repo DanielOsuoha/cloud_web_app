@@ -13,34 +13,40 @@ const CreatePost = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMsg('');
-    if (!isLoggedIn) {
-      navigate('/login');
-      return;
+    
+    const token = localStorage.getItem('token');
+    if (!token) {
+        navigate('/login');
+        return;
     }
+
     setIsSubmitting(true);
     try {
-      const response = await fetch('http://localhost:5000/api/posts', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': token
-        },
-        body: JSON.stringify({ content })
-      });
-      if (!response.ok) {
-        throw new Error('Failed to create post');
-      }
-      const data = await response.json();
-      console.log('New post:', data);
-      setContent('');
-      window.location.reload();
+        const response = await fetch('http://localhost:5000/api/posts', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`  // Add 'Bearer ' prefix
+            },
+            body: JSON.stringify({ content })
+        });
+
+        if (!response.ok) {
+            const data = await response.json();
+            throw new Error(data.message || 'Failed to create post');
+        }
+
+        const data = await response.json();
+        console.log('New post:', data);
+        setContent('');
+        window.location.reload();
     } catch (error) {
-      console.error('Error:', error);
-      setErrorMsg(error.message);
+        console.error('Error:', error);
+        setErrorMsg(error.message);
     } finally {
-      setIsSubmitting(false);
+        setIsSubmitting(false);
     }
-  };
+};
 
   if (!isLoggedIn) {
     return (

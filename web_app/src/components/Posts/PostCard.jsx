@@ -16,44 +16,37 @@ const PostCard = ({ post }) => {
 
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
-    setCommentError('');
-    setCommentLoading(true);
     
-    const newComment = {
-      comment: commentText,
-      user: user._id,    
-      username: user.username,
-      date: new Date()
+    const token = localStorage.getItem('token');
+    if (!token) {
+        alert('Please login to comment');
+        return;
+    }
+
+    const config = {
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`  // Add 'Bearer ' prefix
+        }
     };
 
     try {
-        const token = localStorage.getItem('token');
-        
-        if (!token) {
-            throw new Error('Please login to comment');
-        }
-
         const response = await axios.post(
-            `/api/posts/${post._id}/comments`,
+            `http://localhost:5000/api/posts/${post._id}/comments`,
             { comment: commentText },
-            {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            }
+            config
         );
 
-        // Update comments state
         setPost(prev => ({
             ...prev,
             comments: [...prev.comments, response.data]
         }));
         setCommentText('');
-      } catch (error) {
+    } catch (error) {
         console.error('Error posting comment:', error);
         alert(error.response?.data?.message || 'Error posting comment');
-      }
-    };
+    }
+};
     
   return (
     <div className="post-card">

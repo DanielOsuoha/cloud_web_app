@@ -1,28 +1,23 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
-import Post from './src/models/Post.js';
 import bcrypt from 'bcryptjs';
 import User from './src/models/User.js';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
+import Post from './src/models/Post.js';
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-const MONGODB_URI = process.env.MONGODB_URI;
-const JWT_SECRET = process.env.JWT_SECRET;
+const MONGODB_URI = "mongodb://localhost:27017/social_app";
 
-mongoose.connect(MONGODB_URI, {
-  serverApi: {
-    version: '1',
-    strict: true,
-    deprecationErrors: true,
-  }
-})
-.then(() => console.log('Connected to MongoDB Atlas'))
-.catch(err => console.error('MongoDB connection error:', err));
+mongoose.connect(MONGODB_URI)
+  .then(() => console.log('Connected to social_app MongoDB'))
+  .catch(err => console.error('MongoDB connection error:', err));
+
+const JWT_SECRET = 'x7RTp9JqK5vM3nL8';
 
 const auth = (req, res, next) => {
   const token = req.headers.authorization;
@@ -38,6 +33,33 @@ const auth = (req, res, next) => {
   }
 };
 
+app.get('/api/posts', async (req, res) => {
+  try {
+    if (mongoose.connection.readyState !== 1) {
+      throw new Error('Database not connected');
+    }
+
+    console.log('Fetching posts...');
+    const posts = await Post.find()
+      .sort({ date: -1 })
+      .lean();
+    
+    console.log(`Found ${posts.length} posts`);
+    console.log('First post:', posts[0]);
+
+    res.setHeader('Content-Type', 'application/json');
+    res.status(200).json(posts);
+
+  } catch (err) {
+    console.error('Error fetching posts:', err);
+    res.setHeader('Content-Type', 'application/json');
+    res.status(500).json({ 
+      success: false,
+      error: err.message 
+    });
+  }
+});
+
 app.post('/api/posts', auth, async (req, res) => {
   try {
     const post = new Post({
@@ -52,6 +74,8 @@ app.post('/api/posts', auth, async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+
 
 app.post('/api/posts/:postId/comments', auth, async (req, res) => {
   try {
@@ -192,6 +216,72 @@ app.post('/api/users/forgot-password', async (req, res) => {
   } catch (error) {
     console.error('Error in forgot-password:', error);
     res.status(500).json({ error: 'Error processing forgot password' });
+  }
+});
+
+// Add this test endpoint to server.js
+app.get('/api/test-db', async (req, res) => {
+  try {
+    // Check DB connection
+    const dbState = mongoose.connection.readyState;
+    console.log('MongoDB State:', dbState);
+    
+    // Get connection details
+    const dbName = mongoose.connection.name;
+    const host = mongoose.connection.host;
+    
+    // Get all collections
+    const collections = await mongoose.connection.db.listCollections().toArray();
+    console.log('Collections:', collections.map(c => c.name));
+    
+    // Check users collection
+    const userCount = await User.countDocuments();
+    const postCount = await Post.countDocuments();
+    
+    res.json({
+      connection: {
+        state: dbState,
+        database: dbName,
+        host: host
+      },
+      collections: collections.map(c => c.name),
+      stats: {
+        users: userCount,
+        posts: postCount
+      }
+    });
+  } catch (err) {
+    console.error('Database test error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/test-post', async (req, res) => {
+  try {
+    // Create multiple test posts
+    const testPosts = [
+      {
+        author: 'Test User 1',
+        content: 'First test post',
+        date: new Date()
+      },
+      {
+        author: 'Test User 2',
+        content: 'Second test post',
+        date: new Date()
+      }
+    ];
+    
+    const posts = await Post.insertMany(testPosts);
+    console.log('Test posts created:', posts);
+    
+    res.json({
+      success: true,
+      posts: posts
+    });
+  } catch (err) {
+    console.error('Test post error:', err);
+    res.status(500).json({ error: err.message });
   }
 });
 

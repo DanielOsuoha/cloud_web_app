@@ -1,25 +1,5 @@
 import mongoose from 'mongoose';
 
-const commentSchema = new mongoose.Schema({
-  comment: {
-    type: String,
-    required: true
-  },
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
-  },
-  username: {
-    type: String,
-    required: true
-  },
-  date: {
-    type: Date,
-    default: Date.now
-  }
-});
-
 const postSchema = new mongoose.Schema({
   author: {
     type: String,
@@ -33,7 +13,16 @@ const postSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
-  comments: [commentSchema]
+  comments: [{
+    comment: String,
+    username: String,
+    date: {
+      type: Date,
+      default: Date.now
+    }
+  }]
 });
 
-export default mongoose.model('Post', postSchema);
+// Fix: Change model definition to use schema name correctly
+const Post = mongoose.model('Post', postSchema);
+export default Post;

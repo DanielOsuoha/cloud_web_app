@@ -2,26 +2,23 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import PostCard from './PostCard';
 
-const PostList = () => {
+const  PostList = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const response = await axios.get('http://localhost:5000/api/posts');
-        setPosts(response.data);
-        setLoading(false);
-      } catch (err) {
-        setError('Failed to fetch posts');
-        setLoading(false);
-        console.error('Error fetching posts:', err);
-      }
-    };
+  const fetchPosts = async () => {
+    try {
+      const { data } = await axios.get('http://localhost:5000/api/posts');
+      setPosts(data);
+      setLoading(false);
+    } catch (err) {
+      setError('Failed to fetch posts');
+      setLoading(false);
+    }
+  };
 
-    fetchPosts();
-  }, []);
+  fetchPosts();
 
   if (loading) return <div className="loading">Loading posts...</div>;
   if (error) return <div className="error">{error}</div>;
