@@ -124,7 +124,6 @@ app.post('/api/users/signup', async (req, res) => {
     const { username, email, password } = req.body;
     console.log('Received signup request for:', email); // Add logging
 
-    // Create new user without requiring token
     const user = new User({
       username,
       email,

@@ -30,27 +30,29 @@ const SignUp = () => {
     }
 
     try {
-        const response = await axios.post('http://localhost:5000/api/users/signup', {
-        username: formData.username,
-        email: formData.email,
-        password: formData.password
-      }, {
+      const response = await fetch('http://localhost:5000/api/users/signup', {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json'
-        }
+        },
+        body: JSON.stringify({
+          username: formData.username,
+          email: formData.email,
+          password: formData.password
+        })
       });
 
-      if (response.data.success) {
-        console.log('Signup successful:', response.data);
+      const data = await response.json();
+      
+      if (response.ok) {
+        console.log('Signup successful:', data);
         navigate('/login');
+      } else {
+        throw new Error(data.error || 'Failed to create account');
       }
     } catch (error) {
-      console.error('Signup error details:', {
-        message: error.response?.data?.error || error.message,
-        status: error.response?.status,
-        fullError: error.response?.data
-      });
-      setErrorMsg(error.response?.data?.error || 'Failed to create account. Please try again.');
+      console.error('Signup failed:', error);
+      setErrorMsg(error.message);
     }
   };
 
