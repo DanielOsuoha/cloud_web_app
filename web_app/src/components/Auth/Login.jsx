@@ -1,59 +1,49 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
+import axios from 'axios';
 import './auth.css';
 
 const Login = () => {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  });
-  const [errorMsg, setErrorMsg] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setErrorMsg('');
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setError('');
     try {
-        const response = await fetch(`/api/users/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+      const response = await axios.post('http://localhost:5000/api/users/login', {
+        email,
+        password
       });
-      if (!response.ok) {
-        const data = await response.json();
-        setErrorMsg(data.error || 'Login failed');
-        return;
+      
+      if (response.data.token) {
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('user', JSON.stringify(response.data.user));
+        login(response.data.user);
+        navigate('/');
       }
-      const data = await response.json();
-      login(data.user, data.token);
-      navigate('/');
-    } catch (error) {
-      console.error('Login error:', error);
-      setErrorMsg('Login error. Please try again.');
+    } catch (err) {
+      console.error('Login error:', err.response?.data?.error || err.message);
+      setError(err.response?.data?.error || 'Failed to login');
     }
   };
 
   return (
     <div className="auth-container">
       <h2>Login</h2>
-      {errorMsg && <div className="error-message">{errorMsg}</div>}
+      {error && <div className="error-message">{error}</div>}
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <input
             type="email"
             name="email"
             placeholder="Email"
-            value={formData.email}
-            onChange={handleChange}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             required
           />
         </div>
@@ -62,8 +52,8 @@ const Login = () => {
             type="password"
             name="password"
             placeholder="Password"
-            value={formData.password}
-            onChange={handleChange}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             required
           />
         </div>

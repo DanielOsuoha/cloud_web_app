@@ -11,13 +11,13 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+const JWT_SECRET = 'x7RTp9JqK5vM3nL8';
 const MONGODB_URI = "mongodb://localhost:27017/social_app";
 
 mongoose.connect(MONGODB_URI)
   .then(() => console.log('Connected to social_app MongoDB'))
   .catch(err => console.error('MongoDB connection error:', err));
 
-const JWT_SECRET = 'x7RTp9JqK5vM3nL8';
 
 const auth = (req, res, next) => {
   const token = req.headers.authorization;
@@ -44,8 +44,8 @@ app.get('/api/posts', async (req, res) => {
       .sort({ date: -1 })
       .lean();
     
-    console.log(`Found ${posts.length} posts`);
-    console.log('First post:', posts[0]);
+    // console.log(`Found ${posts.length} posts`);
+    // console.log('First post:', posts[0]);
 
     res.setHeader('Content-Type', 'application/json');
     res.status(200).json(posts);
@@ -163,7 +163,6 @@ app.post('/api/users/login', async (req, res) => {
       email: user.email
     };
     const token = jwt.sign(userPayload, JWT_SECRET, { expiresIn: '1h' });
-    // console.log(userPayload, token)
     res.json({ user: userPayload, token });
   } catch (error) {
     console.error('Login error:', error);

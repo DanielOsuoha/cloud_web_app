@@ -18,7 +18,9 @@ const  PostList = () => {
     }
   };
 
-  fetchPosts();
+  useEffect(() => {
+    fetchPosts();
+  }, []); 
 
   if (loading) return <div className="loading">Loading posts...</div>;
   if (error) return <div className="error">{error}</div>;

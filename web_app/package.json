@@ -8,7 +8,8 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "deploy": "scp -i ~/.ssh/cloud_web_app.pem -r ./* ubuntu@34.205.144.114:/var/www/web_app/"
+    "deploy": "scp -i ~/.ssh/cloud_web_app.pem -r ./* ubuntu@34.205.144.114:/var/www/web_app/",
+    "server": "node server.js"
   },
   "dependencies": {
     "aws-amplify": "^6.14.3",

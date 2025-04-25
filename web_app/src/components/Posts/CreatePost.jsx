@@ -2,6 +2,7 @@ import React, { useState, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import AuthRequired from '../Auth/AuthRequired';
+import axios from 'axios';
 
 const CreatePost = () => {
   const [content, setContent] = useState('');
@@ -10,43 +11,32 @@ const CreatePost = () => {
   const navigate = useNavigate();
   const { isLoggedIn, token } = useContext(AuthContext);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setErrorMsg('');
-    
-    const token = localStorage.getItem('token');
-    if (!token) {
-        navigate('/login');
-        return;
-    }
-
-    setIsSubmitting(true);
+  const handleSubmit = async (event) => {
+    event.preventDefault();
     try {
-        const response = await fetch('http://localhost:5000/api/posts', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`  // Add 'Bearer ' prefix
-            },
-            body: JSON.stringify({ content })
-        });
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('Please login to create a post');
+      }
 
-        if (!response.ok) {
-            const data = await response.json();
-            throw new Error(data.message || 'Failed to create post');
+      const response = await axios.post(
+        'http://localhost:5000/api/posts',
+        { content },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': token 
+          }
         }
+      );
 
-        const data = await response.json();
-        console.log('New post:', data);
-        setContent('');
-        window.location.reload();
-    } catch (error) {
-        console.error('Error:', error);
-        setErrorMsg(error.message);
-    } finally {
-        setIsSubmitting(false);
+      setContent('');
+      window.location.reload();
+    } catch (err) {
+      console.error('Error:', err.response?.data || err.message);
+      setErrorMsg(err.response?.data?.error || 'Failed to create post');
     }
-};
+  };
 
   if (!isLoggedIn) {
     return (
