@@ -13,28 +13,32 @@ const CreatePost = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setIsSubmitting(true);
+    
     try {
       const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('Please login to create a post');
+      const response = await fetch('http://localhost:5000/api/posts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token
+        },
+        body: JSON.stringify({ content })
+      });
+
+      const data = await response.json();
+      
+      if (response.ok) {
+        setContent('');
+        window.location.reload();
+      } else {
+        throw new Error(data.error || 'Failed to create post');
       }
-
-      const response = await axios.post(
-        'http://localhost:5000/api/posts',
-        { content },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': token 
-          }
-        }
-      );
-
-      setContent('');
-      window.location.reload();
-    } catch (err) {
-      console.error('Error:', err.response?.data || err.message);
-      setErrorMsg(err.response?.data?.error || 'Failed to create post');
+    } catch (error) {
+      console.error('Post creation error:', error);
+      setErrorMsg(error.message || 'Failed to create post');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 

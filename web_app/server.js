@@ -122,12 +122,16 @@ app.get('/api/posts/:postId/comments', auth, async (req, res) => {
 app.post('/api/users/signup', async (req, res) => {
   try {
     const { username, email, password } = req.body;
-    console.log('Received signup request for:', email); // Add logging
+    console.log('Received signup request for:', email);
+
+    // Generate salt and hash password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
     const user = new User({
       username,
       email,
-      password: await bcrypt.hash(password, 10)
+      password: hashedPassword
     });
 
     await user.save();
@@ -141,7 +145,7 @@ app.post('/api/users/signup', async (req, res) => {
     });
 
   } catch (error) {
-    console.log('Detailed signup error:', error); 
+    console.error('Signup error:', error);
     res.status(500).json({ error: 'Error creating user' });
   }
 });
@@ -218,71 +222,6 @@ app.post('/api/users/forgot-password', async (req, res) => {
   }
 });
 
-// Add this test endpoint to server.js
-app.get('/api/test-db', async (req, res) => {
-  try {
-    // Check DB connection
-    const dbState = mongoose.connection.readyState;
-    console.log('MongoDB State:', dbState);
-    
-    // Get connection details
-    const dbName = mongoose.connection.name;
-    const host = mongoose.connection.host;
-    
-    // Get all collections
-    const collections = await mongoose.connection.db.listCollections().toArray();
-    console.log('Collections:', collections.map(c => c.name));
-    
-    // Check users collection
-    const userCount = await User.countDocuments();
-    const postCount = await Post.countDocuments();
-    
-    res.json({
-      connection: {
-        state: dbState,
-        database: dbName,
-        host: host
-      },
-      collections: collections.map(c => c.name),
-      stats: {
-        users: userCount,
-        posts: postCount
-      }
-    });
-  } catch (err) {
-    console.error('Database test error:', err);
-    res.status(500).json({ error: err.message });
-  }
-});
-
-app.post('/api/test-post', async (req, res) => {
-  try {
-    // Create multiple test posts
-    const testPosts = [
-      {
-        author: 'Test User 1',
-        content: 'First test post',
-        date: new Date()
-      },
-      {
-        author: 'Test User 2',
-        content: 'Second test post',
-        date: new Date()
-      }
-    ];
-    
-    const posts = await Post.insertMany(testPosts);
-    console.log('Test posts created:', posts);
-    
-    res.json({
-      success: true,
-      posts: posts
-    });
-  } catch (err) {
-    console.error('Test post error:', err);
-    res.status(500).json({ error: err.message });
-  }
-});
 
 const PORT = 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
