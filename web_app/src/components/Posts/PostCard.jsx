@@ -26,7 +26,7 @@ const PostCard = ({ post }) => {
     const config = {
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`  // Add 'Bearer ' prefix
+            'Authorization': `Bearer ${token}` 
         }
     };
 

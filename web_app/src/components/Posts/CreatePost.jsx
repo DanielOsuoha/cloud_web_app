@@ -8,23 +8,21 @@ const CreatePost = () => {
   const [content, setContent] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { isLoggedIn, token } = useContext(AuthContext);  // Get token from context
+  const { isLoggedIn, token } = useContext(AuthContext);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setIsSubmitting(true);
 
     try {
-      // Use token from context instead of localStorage
       console.log('Auth state:', { isLoggedIn, token });
-
       const response = await axios.post(
         'http://localhost:5000/api/posts',
         { content },
         {
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer `  
+            'Authorization': `Bearer ${token}`  
           }
         }
       );
