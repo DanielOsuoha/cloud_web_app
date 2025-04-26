@@ -16,13 +16,14 @@ const CreatePost = () => {
 
     try {
       const storedToken = localStorage.getItem('token');
-      console.log(storedToken)
+      console.log('Token being sent:', storedToken);
+      
       const response = await axios({
         method: 'post',
         url: 'http://localhost:5000/api/posts',
         data: { content },
         headers: {
-          'Authorization': `Bearer ${storedToken}`  // Add 'Bearer ' prefix
+          'authorization': `Bearer ${storedToken}`  // lowercase to match Express
         }
       });
 
