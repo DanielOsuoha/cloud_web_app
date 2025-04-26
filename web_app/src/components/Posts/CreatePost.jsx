@@ -8,7 +8,6 @@ const CreatePost = () => {
   const [content, setContent] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const navigate = useNavigate();
   const { isLoggedIn, token } = useContext(AuthContext);  // Get token from context
 
   const handleSubmit = async (event) => {
