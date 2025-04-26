@@ -44,9 +44,6 @@ app.get('/api/posts', async (req, res) => {
     const posts = await Post.find()
       .sort({ date: -1 })
       .lean();
-    
-    // console.log(`Found ${posts.length} posts`);
-    // console.log('First post:', posts[0]);
 
     res.setHeader('Content-Type', 'application/json');
     res.status(200).json(posts);
@@ -67,6 +64,7 @@ app.post('/api/posts', auth, async (req, res) => {
       author: req.user.username,
       content: req.body.content || 'Empty post'
     });
+    console.log('Creating new post:', post);
     await post.save();
     console.log('New post created:', post);
     res.json(post);

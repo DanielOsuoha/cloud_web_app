@@ -13,26 +13,26 @@ const CreatePost = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     setIsSubmitting(true);
-    console.log(token)
+
     try {
-      const response = await axios.post(
-        'http://localhost:5000/api/posts',
-        { content },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': token  
-          }
+      // Get token from localStorage directly
+      const storedToken = localStorage.getItem('token');
+      console.log(storedToken)
+      const response = await axios({
+        method: 'post',
+        url: 'http://localhost:5000/api/posts',
+        data: { content },
+        headers: {
+          'Authorization': `Bearer ${storedToken}`  // Add 'Bearer ' prefix
         }
-      );
+      });
 
       if (response.data) {
         setContent('');
         window.location.reload();
       }
     } catch (error) {
-      console.error('Post creation error:', error.response?.data || error);
-      setErrorMsg(error.response?.data?.error || 'Failed to create post');
+      setErrorMsg('Failed to create post');
     } finally {
       setIsSubmitting(false);
     }
