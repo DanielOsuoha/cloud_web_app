@@ -3,11 +3,18 @@ import jwt from 'jsonwebtoken';
 const JWT_SECRET = 'x7RTp9JqK5vM3nL8';  // Move to environment variables later
 
 const auth = (req, res, next) => {
-  console.log('Auth middleware triggered');
+console.log('🔒 Auth Check:', {
+    path: req.path,
+    method: req.method,
+    headers: req.headers
+  });
+
   const token = req.headers.authorization;
-  console.log('Auth middleware received:', {
-    fullHeader: token,
-    type: typeof token
+  
+  console.log('Auth middleware check:', {
+    hasToken: !!token,
+    tokenStart: token?.substring(0, 20),
+    path: req.path
   });
 
   if (!token) {
@@ -15,19 +22,13 @@ const auth = (req, res, next) => {
   }
 
   try {
-    const tokenStr = token.replace('Bearer ', '').trim();
-    console.log('Cleaned token:', tokenStr, '  JWT: ', JWT_SECRET);
-
+    const tokenStr = token.startsWith('Bearer ') ? token.slice(7) : token;
     const decoded = jwt.verify(tokenStr, JWT_SECRET);
-    console.log('Token verified for user:', decoded.username);
-
     req.user = decoded;
+    console.log('Token verified for:', decoded.username);
     next();
   } catch (error) {
-    console.error('Token verification failed:', {
-      error: error.message,
-      token: token.substring(0, 20) + '...'
-    });
+    console.error('Token verification failed:', error.message);
     return res.status(401).json({ error: 'Invalid token' });
   }
 };

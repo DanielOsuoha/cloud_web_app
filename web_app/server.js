@@ -7,12 +7,14 @@ import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import Post from './src/models/Post.js';
 import auth from './src/middleware/auth.js';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-const JWT_SECRET = 'x7RTp9JqK5vM3nL8';
+const JWT_SECRET = process.env.JWT_SECRET || 'x7RTp9JqK5vM3nL8';
 const MONGODB_URI = "mongodb://localhost:27017/social_app";
 
 mongoose.connect(MONGODB_URI)
@@ -157,10 +159,15 @@ app.post('/api/users/login', async (req, res) => {
       expiresIn: '6h' 
     });
 
+    console.log('Token created:', {
+      payload: userPayload,
+      tokenPreview: token.substring(0, 20) + '...'
+    });
+
     res.json({ 
       success: true,
       user: userPayload, 
-      token: `Bearer ${token}` 
+      token: token  // Remove 'Bearer ' prefix, will add in auth middleware
     });
 
   } catch (error) {
