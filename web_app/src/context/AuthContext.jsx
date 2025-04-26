@@ -42,6 +42,7 @@ export const AuthProvider = ({ children }) => {
 
     localStorage.setItem('token', token);
     localStorage.setItem('user', JSON.stringify(user));
+    console.log(localStorage.getItem('token'));
   }, []);
 
   const logout = useCallback(() => {

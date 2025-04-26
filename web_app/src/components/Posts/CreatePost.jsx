@@ -15,7 +15,6 @@ const CreatePost = () => {
     setIsSubmitting(true);
 
     try {
-      // Get token from localStorage directly
       const storedToken = localStorage.getItem('token');
       console.log(storedToken)
       const response = await axios({
