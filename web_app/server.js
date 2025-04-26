@@ -137,8 +137,6 @@ app.post('/api/users/signup', async (req, res) => {
 app.post('/api/users/login', async (req, res) => {
   try {
     const { email, password } = req.body;
-    console.log('Login attempt for:', email); 
-
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ error: 'Invalid email or password' });

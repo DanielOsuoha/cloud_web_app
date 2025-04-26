@@ -23,6 +23,5 @@ const postSchema = new mongoose.Schema({
   }]
 });
 
-// Fix: Change model definition to use schema name correctly
 const Post = mongoose.model('Post', postSchema);
 export default Post;
