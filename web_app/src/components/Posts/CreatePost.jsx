@@ -15,24 +15,33 @@ const CreatePost = () => {
     setIsSubmitting(true);
 
     try {
-      const storedToken = localStorage.getItem('token');
-      console.log('Token being sent:', storedToken);
-      
-      const response = await axios({
-        method: 'post',
-        url: 'http://localhost:5000/api/posts',
-        data: { content },
-        headers: {
-          'authorization': `Bearer ${storedToken}`  // lowercase to match Express
-        }
-      });
+      // Use token from context instead of localStorage
+      console.log('Auth state:', { isLoggedIn, token });
 
-      if (response.data) {
-        setContent('');
-        window.location.reload();
-      }
+      const response = await axios.post(
+        'http://localhost:5000/api/posts',
+        { content },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`  // Use capital A in Authorization
+          }
+        }
+      );
+
+      console.log('Post creation response:', response.data);
+      setContent('');
+      // Avoid using window.location.reload()
+      // Instead, trigger a state update in parent component
     } catch (error) {
-      setErrorMsg('Failed to create post');
+      console.error('Post creation error:', {
+        status: error.response?.status,
+        message: error.response?.data?.error || error.message,
+        headers: error.response?.headers,
+        requestHeaders: error.config?.headers
+      });
+      
+      setErrorMsg(error.response?.data?.error || 'Failed to create post');
     } finally {
       setIsSubmitting(false);
     }
