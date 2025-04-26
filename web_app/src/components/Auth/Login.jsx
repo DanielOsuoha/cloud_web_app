@@ -17,10 +17,7 @@ const Login = () => {
       const response = await axios.post('http://localhost:5000/api/users/login', {
         email,
         password
-      });
-
-      console.log('Login response:', response.data); // Debug response
-      
+      });      
       if (response.data.token) {
         login(response.data.user, response.data.token);
         navigate('/');
