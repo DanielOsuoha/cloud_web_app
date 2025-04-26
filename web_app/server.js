@@ -6,6 +6,7 @@ import User from './src/models/User.js';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import Post from './src/models/Post.js';
+import auth from './src/middleware/auth.js';
 
 const app = express();
 app.use(cors());
@@ -18,27 +19,6 @@ mongoose.connect(MONGODB_URI)
   .then(() => console.log('Connected to social_app MongoDB'))
   .catch(err => console.error('MongoDB connection error:', err));
 
-
-const auth = (req, res, next) => {
-  const token = req.headers.authorization;
-  console.log('Received token:', token); // Debug log
-
-  if (!token) {
-    return res.status(401).json({ error: 'No token provided' });
-  }
-
-  try {
-    const tokenStr = token.startsWith('Bearer ') ? token.slice(7) : token;
-    const decoded = jwt.verify(tokenStr, JWT_SECRET);
-    console.log('Decoded token:', decoded); 
-
-    req.user = decoded;
-    next();
-  } catch (error) {
-    console.error('Token verification failed:', error.message);
-    return res.status(401).json({ error: 'Invalid token' });
-  }
-};
 
 app.get('/api/posts', async (req, res) => {
   try {
@@ -79,8 +59,6 @@ app.post('/api/posts', auth, async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
-
-
 
 app.post('/api/posts/:postId/comments', auth, async (req, res) => {
   try {
