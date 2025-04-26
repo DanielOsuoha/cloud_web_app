@@ -24,15 +24,14 @@ const CreatePost = () => {
         {
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`  // Use capital A in Authorization
+            'Authorization': `Bearer `  
           }
         }
       );
 
       console.log('Post creation response:', response.data);
       setContent('');
-      // Avoid using window.location.reload()
-      // Instead, trigger a state update in parent component
+      window.location.reload()
     } catch (error) {
       console.error('Post creation error:', {
         status: error.response?.status,

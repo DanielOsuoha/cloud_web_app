@@ -3,7 +3,8 @@ import jwt from 'jsonwebtoken';
 const JWT_SECRET = 'x7RTp9JqK5vM3nL8';  
 
 const auth = (req, res, next) => {
-console.log('🔒 Auth Check:', {
+  
+  console.log('🔒 Auth Check:', {
     path: req.path,
     method: req.method,
     headers: req.headers
