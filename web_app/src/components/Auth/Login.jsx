@@ -8,8 +8,8 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const navigate = useNavigate();
   const { login } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -17,9 +17,12 @@ const Login = () => {
       const response = await axios.post('http://localhost:5000/api/users/login', {
         email,
         password
-      });      
+      });
+
+      console.log('Login response:', response.data);
+      
       if (response.data.token) {
-        login(response.data.user, response.data.token);
+        login(response.data.user, response.data.token); // Calling login from AuthContext
         navigate('/');
       }
     } catch (error) {

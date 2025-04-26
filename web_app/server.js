@@ -176,7 +176,7 @@ app.post('/api/users/login', async (req, res) => {
     res.json({ 
       success: true,
       user: userPayload, 
-      token: `Bearer ${token}` 
+      token: token 
     });
 
   } catch (error) {
