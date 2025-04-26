@@ -15,7 +15,7 @@ const auth = (req, res, next) => {
 
   try {
     const tokenStr = token.replace('Bearer ', '').trim();
-    console.log('Cleaned token:', tokenStr.substring(0, 20) + '...');
+    console.log('Cleaned token:', tokenStr, '  JWT: ', JWT_SECRET);
 
     const decoded = jwt.verify(tokenStr, JWT_SECRET);
     console.log('Token verified for user:', decoded.username);
