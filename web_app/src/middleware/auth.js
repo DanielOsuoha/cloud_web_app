@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 const JWT_SECRET = 'x7RTp9JqK5vM3nL8';  // Move to environment variables later
 
 const auth = (req, res, next) => {
+  console.log('Auth middleware triggered');
   const token = req.headers.authorization;
   console.log('Auth middleware received:', {
     fullHeader: token,
