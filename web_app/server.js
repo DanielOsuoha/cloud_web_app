@@ -21,15 +21,21 @@ mongoose.connect(MONGODB_URI)
 
 const auth = (req, res, next) => {
   const token = req.headers.authorization;
+  console.log('Received token:', token); // Debug log
+
   if (!token) {
     return res.status(401).json({ error: 'No token provided' });
   }
-  try {
 
-    const decoded = jwt.verify(token, JWT_SECRET);
+  try {
+    const tokenStr = token.startsWith('Bearer ') ? token.slice(7) : token;
+    const decoded = jwt.verify(tokenStr, JWT_SECRET);
+    console.log('Decoded token:', decoded); 
+
     req.user = decoded;
     next();
   } catch (error) {
+    console.error('Token verification failed:', error.message);
     return res.status(401).json({ error: 'Invalid token' });
   }
 };
