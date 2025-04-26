@@ -151,21 +151,34 @@ app.post('/api/users/signup', async (req, res) => {
 app.post('/api/users/login', async (req, res) => {
   try {
     const { email, password } = req.body;
+    console.log('Login attempt for:', email); // Add logging
+
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ error: 'Invalid email or password' });
     }
+
     const isValidPassword = await bcrypt.compare(password, user.password);
     if (!isValidPassword) {
       return res.status(400).json({ error: 'Invalid email or password' });
     }
+
     const userPayload = {
       id: user._id,
       username: user.username,
       email: user.email
     };
-    const token = jwt.sign(userPayload, JWT_SECRET, { expiresIn: '1h' });
-    res.json({ user: userPayload, token });
+
+    const token = jwt.sign(userPayload, JWT_SECRET, { 
+      expiresIn: '6h' 
+    });
+
+    res.json({ 
+      success: true,
+      user: userPayload, 
+      token: `Bearer ${token}` 
+    });
+
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ error: 'Error logging in' });

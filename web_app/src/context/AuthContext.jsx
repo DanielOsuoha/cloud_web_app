@@ -18,9 +18,9 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = (user, token) => {
+    console.log('Login - Setting token:', token); // Debug token
     setAuth({ isLoggedIn: true, user, token });
     localStorage.setItem('token', token);
-    console.log(token)
     localStorage.setItem('user', JSON.stringify(user));
   };
 

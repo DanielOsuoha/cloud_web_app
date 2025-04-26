@@ -13,22 +13,21 @@ const Login = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setError('');
     try {
       const response = await axios.post('http://localhost:5000/api/users/login', {
         email,
         password
       });
+
+      console.log('Login response:', response.data); // Debug response
       
       if (response.data.token) {
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
-        login(response.data.user);
+        login(response.data.user, response.data.token);
         navigate('/');
       }
-    } catch (err) {
-      console.error('Login error:', err.response?.data?.error || err.message);
-      setError(err.response?.data?.error || 'Failed to login');
+    } catch (error) {
+      console.error('Login error:', error);
+      setError(error.response?.data?.error || 'Failed to login');
     }
   };
 
