@@ -36,7 +36,7 @@ const PostCard = ({ post }) => {
             { comment: commentText },
             config
         );
-
+        console.log('Comment response:', response.data);
         setPost(prev => ({
             ...prev,
             comments: [...prev.comments, response.data]
