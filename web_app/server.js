@@ -165,7 +165,7 @@ app.post('/api/users/login', async (req, res) => {
     res.json({ 
       success: true,
       user: userPayload, 
-      token: token  // Remove 'Bearer ' prefix, will add in auth middleware
+      token: token  
     });
 
   } catch (error) {
@@ -253,6 +253,30 @@ app.put('/api/posts/:id', auth, async (req, res) => {
   }
 });
 
+app.delete('/api/posts/:postId/comments/:commentId', auth, async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.postId);
+    if (!post) {
+      return res.status(404).json({ error: 'Post not found' });
+    }
+    const commentIndex = post.comments.findIndex(
+      c => c._id.toString() === req.params.commentId
+    );
+
+    if (commentIndex === -1) {
+      return res.status(404).json({ error: 'Comment not found' });
+    }
+    if (post.comments[commentIndex].username !== req.user.username) {
+      return res.status(403).json({ error: 'Not authorized to delete this comment' });
+    }
+    post.comments.splice(commentIndex, 1);
+    await post.save();
+    res.json({ message: 'Comment deleted successfully' });
+  } catch (error) {
+    console.error('Delete comment error:', error);
+    res.status(500).json({ error: 'Error deleting comment' });
+  }
+});
 
 const PORT = 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
