@@ -3,7 +3,7 @@ import axios from 'axios';
 import { AuthContext } from '../../context/AuthContext';
 
 const PostCard = ({ post }) => {
-  const { user } = useContext(AuthContext);
+  const { user, token } = useContext(AuthContext);  // Add token from context
   const [showCommentForm, setShowCommentForm] = useState(false);
   const [commentText, setCommentText] = useState('');
   const [commentLoading, setCommentLoading] = useState(false);
@@ -17,57 +17,58 @@ const PostCard = ({ post }) => {
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
     
-    const token = localStorage.getItem('token');
     if (!token) {
-        alert('Please login to comment');
-        return;
+      alert('Please login to comment');
+      return;
     }
 
-    const config = {
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}` 
-        }
-    };
+    setCommentLoading(true);
+    setCommentError('');
 
     try {
-        const response = await axios.post(
-            `http://localhost:5000/api/posts/${post._id}/comments`,
-            { comment: commentText },
-            config
-        );
-        console.log('Comment response:', response.data);
-        setComments(prev => [...prev, response.data]);
-        setCommentText('');
-    } catch (error) {
-        console.error('Error posting comment:', error);
-        alert(error.response?.data?.message || 'Error posting comment');
-    }
-};
-
-const handleDeleteComment = async (commentId) => {
-  const token = localStorage.getItem('token');
-  if (!token) {
-    alert('Please login to delete comments');
-    return;
-  }
-
-  try {
-    await axios.delete(
-      `http://localhost:5000/api/posts/${post._id}/comments/${commentId}`,
-      {
-        headers: {
-          'Authorization': `Bearer ${token}`
+      const response = await axios.post(
+        `http://localhost:5000/api/posts/${post._id}/comments`,
+        { comment: commentText },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
         }
-      }
-    );
-    
-    setComments(prev => prev.filter(comment => comment._id !== commentId));
-  } catch (error) {
-    console.error('Error deleting comment:', error);
-    alert(error.response?.data?.error || 'Error deleting comment');
-  }
-};
+      );
+      
+      setComments(prev => [...prev, response.data]);
+      setCommentText('');
+    } catch (error) {
+      console.error('Error posting comment:', error);
+      setCommentError(error.response?.data?.error || 'Error posting comment');
+    } finally {
+      setCommentLoading(false);
+    }
+  };
+
+  const handleDeleteComment = async (commentId) => {
+    if (!token) {
+      alert('Please login to delete comments');
+      return;
+    }
+
+    try {
+      await axios.delete(
+        `http://localhost:5000/api/posts/${post._id}/comments/${commentId}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
+      
+      setComments(prev => prev.filter(comment => comment._id !== commentId));
+    } catch (error) {
+      console.error('Error deleting comment:', error);
+      alert(error.response?.data?.error || 'Error deleting comment');
+    }
+  };
 
   return (
     <div className="post-card">
