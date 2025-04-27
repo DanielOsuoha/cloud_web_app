@@ -9,6 +9,8 @@ const PostCard = ({ post }) => {
   const [commentLoading, setCommentLoading] = useState(false);
   const [commentError, setCommentError] = useState('');
   const [comments, setComments] = useState(post.comments || []);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedContent, setEditedContent] = useState(post.content);
 
   const handleCommentToggle = () => {
     setShowCommentForm(prev => !prev);
@@ -37,10 +39,7 @@ const PostCard = ({ post }) => {
             config
         );
         console.log('Comment response:', response.data);
-        setPost(prev => ({
-            ...prev,
-            comments: [...prev.comments, response.data]
-        }));
+        setComments(prev => [...prev, response.data]);
         setCommentText('');
     } catch (error) {
         console.error('Error posting comment:', error);
@@ -48,6 +47,59 @@ const PostCard = ({ post }) => {
     }
 };
     
+  const handleDelete = async (type, id) => {
+    const token = localStorage.getItem('token');
+    try {
+      await axios.delete(
+        `http://localhost:5000/api/${type}/${id}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
+      
+      if (type === 'comments') {
+        setComments(prev => prev.filter(comment => comment._id !== id));
+      } else if (type === 'posts') {
+        // Trigger parent component refresh
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error(`Error deleting ${type}:`, error);
+      alert(error.response?.data?.message || `Error deleting ${type}`);
+    }
+  };
+
+  const handleEdit = async (type, id, newContent) => {
+    const token = localStorage.getItem('token');
+    try {
+      const response = await axios.put(
+        `http://localhost:5000/api/${type}/${id}`,
+        { content: newContent },
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
+      
+      if (type === 'comments') {
+        setComments(prev => 
+          prev.map(comment => 
+            comment._id === id ? response.data : comment
+          )
+        );
+      } else if (type === 'posts') {
+        setEditedContent(newContent);
+        setIsEditing(false);
+      }
+    } catch (error) {
+      console.error(`Error editing ${type}:`, error);
+      alert(error.response?.data?.message || `Error editing ${type}`);
+    }
+  };
+
   return (
     <div className="post-card">
       <div className="post-header">
@@ -55,10 +107,35 @@ const PostCard = ({ post }) => {
         <span className="post-date">
           {new Date(post.date).toLocaleDateString()}
         </span>
+        {user?.username === post.author && (
+          <div className="post-actions">
+            <button onClick={() => setIsEditing(!isEditing)}>
+              {isEditing ? 'Cancel' : 'Edit'}
+            </button>
+            <button onClick={() => handleDelete('posts', post._id)}>
+              Delete
+            </button>
+          </div>
+        )}
       </div>
+
       <div className="post-content">
-        <p>{post.content}</p>
+        {isEditing ? (
+          <div>
+            <textarea
+              value={editedContent}
+              onChange={(e) => setEditedContent(e.target.value)}
+              rows="4"
+            />
+            <button onClick={() => handleEdit('posts', post._id, editedContent)}>
+              Save
+            </button>
+          </div>
+        ) : (
+          <p>{post.content}</p>
+        )}
       </div>
+
       <button className="comment-button" onClick={handleCommentToggle}>
         Comment
       </button>
@@ -86,11 +163,17 @@ const PostCard = ({ post }) => {
           {comments.map((com, index) => (
             <div key={index} className="comment-item">
               <div className="comment-header">
-                {console.log(com)}
-                {/* <div className="comment-username">By {com.username}</div> */}
+                <div className="comment-username">By {com.username}</div>
                 <span className="comment-date">
                   {new Date(com.date).toLocaleDateString()}
                 </span>
+                {user?.username === com.username && (
+                  <div className="comment-actions">
+                    <button onClick={() => handleDelete('comments', com._id)}>
+                      Delete
+                    </button>
+                  </div>
+                )}
               </div>
               <div className="comment-content">{com.comment}</div>
             </div>

@@ -222,6 +222,37 @@ app.post('/api/users/forgot-password', async (req, res) => {
   }
 });
 
+// Delete post
+app.delete('/api/posts/:id', auth, async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+    if (!post) return res.status(404).json({ error: 'Post not found' });
+    if (post.author !== req.user.username) {
+      return res.status(403).json({ error: 'Not authorized' });
+    }
+    await post.deleteOne();
+    res.json({ message: 'Post deleted' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Update post
+app.put('/api/posts/:id', auth, async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+    if (!post) return res.status(404).json({ error: 'Post not found' });
+    if (post.author !== req.user.username) {
+      return res.status(403).json({ error: 'Not authorized' });
+    }
+    post.content = req.body.content;
+    await post.save();
+    res.json(post);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 
 const PORT = 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
