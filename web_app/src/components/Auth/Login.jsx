@@ -18,9 +18,7 @@ const Login = () => {
         email,
         password
       });
-
-      console.log('Login response:', response.data);
-      
+ 
       if (response.data.token) {
         login(response.data.user, response.data.token); // Calling login from AuthContext
         navigate('/');

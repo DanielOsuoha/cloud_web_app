@@ -1,90 +1,70 @@
-# Social Cloud Web App
+# Social Cloud Web Application
 
-A social media web application built with React and Node.js.
+## Overview
+Social Cloud is a full-stack social media web application built with the MERN stack (MongoDB, Express.js, React, Node.js). It allows users to create accounts, share posts, and interact through comments in a secure environment.
 
-## Features
-
-- User authentication (signup/login)
-- Create and view posts
-- Comment on posts
-- Real-time updates
+## Key Features
+- User authentication (signup, login, password management)
+- Post creation and viewing
+- Comment functionality (add, update, delete)
 - Responsive design
 
-## Tech Stack
+## Technical Architecture
 
-- Frontend: React, React Router
-- Backend: Express.js, MongoDB
-- Authentication: JWT
-- API: RESTful endpoints
+### Frontend (React)
+- Component-based UI architecture
+- State management with React hooks and Context API
+- Axios for API communication
+- React Router for navigation
+- Form validation and error handling
 
-## Setup
+### Backend (Node.js/Express)
+- RESTful API design
+- JWT authentication
+- MongoDB integration with Mongoose
+- Password hashing with bcrypt
+- Error handling and validation
 
-1. Install dependencies:
+### Database (MongoDB)
+- User collection: stores user credentials and profile information
+- Post collection: stores user posts with references to authors
+- Comment collection: stores comments with references to posts and users
+
+## API Documentation
+
+### Authentication Endpoints
+- `POST /api/users/signup` - Register new user
+- `POST /api/users/login` - Authenticate user and return JWT
+- `POST /api/users/verify-email` - Verify email for password updates
+- `PUT /api/users/password` - Update user password
+
+### Post Endpoints
+- `GET /api/posts` - Retrieve all posts
+- `POST /api/posts` - Create a new post
+
+### Comment Endpoints
+- `GET /api/posts/:postId/comments` - Get all comments for a post
+- `POST /api/posts/:postId/comments` - Add a comment to a post
+- `PUT /api/comments/:commentId` - Update a comment
+- `DELETE /api/comments/:commentId` - Delete a comment
+
+## Security Features
+- JWT-based authentication
+- Password hashing with bcrypt
+- Input validation and sanitization
+- Protected routes requiring authentication
+- Password complexity requirements
+
+## Setup Instructions
+
+### Prerequisites
+- Node.js (v14+)
+- MongoDB (local or Atlas)
+- npm or yarn
+
+### Installation
+1. Clone the repository
 ```bash
-npm install
+git clone https://github.com/username/cloud_web_app.git
+cd cloud_web_app
 ```
-
-2. Start the backend server:
-```bash
-npm run server
-```
-
-3. Start the React development server:
-```bash
-npm run dev
-```
-
-## API Endpoints
-
-### Authentication
-- POST `/api/users/signup` - Create new user
-- POST `/api/users/login` - Login user
-
-### Posts
-- GET `/api/posts` - Get all posts
-- POST `/api/posts` - Create new post
-- POST `/api/posts/:postId/comments` - Add comment to post
-
-## Environment Variables
-
-Create a `.env` file in the root directory:
-```
-PORT=5000
-JWT_SECRET=your_jwt_secret
-```
-
-## Database Setup
-
-### Option 1: Local MongoDB
-1. Install MongoDB locally:
-```bash
-brew install mongodb-community
-```
-
-2. Start MongoDB service:
-```bash
-brew services start mongodb-community
-```
-
-3. Use local connection string:
-```
-MONGODB_URI=mongodb://localhost:27017/social_app
-```
-
-### Option 2: MongoDB Atlas
-1. Create free cluster at [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
-2. Get connection string from Atlas dashboard
-3. Replace `<password>` with your database password:
-```
-MONGODB_URI=mongodb+srv://username:<password>@cluster0.xxxxx.mongodb.net/social_app
-```
-
-### Verifying Connection
-```bash
-# Check database status
-mongosh
-> use social_app
-> show collections
-```
-
-**Note:** For production, always use MongoDB Atlas with proper security measures.
