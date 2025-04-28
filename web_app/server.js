@@ -52,9 +52,7 @@ app.post('/api/posts', auth, async (req, res) => {
       author: req.user.username,
       content: req.body.content || 'Empty post'
     });
-    console.log('Creating new post:', post);
     await post.save();
-    console.log('New post created:', post);
     res.json(post);
   } catch (error) {
     console.error('Error creating post:', error);
@@ -66,21 +64,27 @@ app.post('/api/posts/:postId/comments', auth, async (req, res) => {
   try {
     const { postId } = req.params;
     const { comment } = req.body;
-    const post = await Post.findById(postId);
     
+    if (!comment || !comment.trim()) {
+      return res.status(400).json({ error: 'Comment cannot be empty' });
+    }
+    const post = await Post.findById(postId);
     if (!post) {
       return res.status(404).json({ error: 'Post not found' });
     }
     
-    const newComment = {
-      comment,
-      username: req.user.username,
+    const newComment = new Comment({
+      post: postId,
+      user: req.user._id,
+      content: comment.trim(),
       date: new Date()
-    };
-    post.comments.push(newComment);
-    await post.save();
-    const addedComment = post.comments[post.comments.length - 1];
-    res.json(addedComment);
+    });
+    
+    await newComment.save();
+    
+    const populatedComment = await newComment.populate('user', 'username');
+
+    res.json(populatedComment);
   } catch (error) {
     console.error('Error adding comment:', error);
     res.status(500).json({ error: 'Error adding comment' });
@@ -90,12 +94,8 @@ app.post('/api/posts/:postId/comments', auth, async (req, res) => {
 app.get('/api/posts/:postId/comments', auth, async (req, res) => {
   try {
     const { postId } = req.params;
-    const post = await Post.findById(postId);
-    
-    if (!post) {
-      return res.status(404).json({ error: 'Post not found' });
-    }
-    res.json({ comments: post.comments });
+    const comments = await Comment.find({ post: postId }).populate('user', 'username');
+    res.json(comments);
   } catch (error) {
     console.error('Error fetching comments:', error);
     res.status(500).json({ error: 'Error fetching comments' });
@@ -115,7 +115,7 @@ app.delete('/api/posts/:postId/comments/:commentIndex/', auth, async (req, res) 
       return res.status(404).json({ error: 'Comment not found' });
     }
 
-    const comment = post.comments[index];
+    const comment = post
     if (comment.username !== req.user.username) {
       return res.status(403).json({ error: 'Not authorized to delete this comment' });
     }
@@ -202,51 +202,29 @@ app.post('/api/users/login', async (req, res) => {
   }
 });
 
-app.post('/api/users/update-password', async (req, res) => {
+app.post('/api/users/reset-password', async (req, res) => {
   try {
-    const { email, currentPassword, newPassword } = req.body;
-    if (!email || !currentPassword || !newPassword) {
-      return res.status(400).json({ error: 'Email, current password, and new password are required' });
+    const { email, password } = req.body;
+    
+    if (!password || !password.trim()) {
+      return res.status(400).json({ message: 'Password cannot be empty.' });
     }
+    
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(400).json({ message: 'Email not found.' });
     }
-    const isValidPassword = await bcrypt.compare(currentPassword, user.password);
-    if (!isValidPassword) {
-      return res.status(400).json({ error: 'Invalid current password' });
-    }
+    
     const salt = await bcrypt.genSalt(10);
-    const hashedNewPassword = await bcrypt.hash(newPassword, salt);
-    user.password = hashedNewPassword;
+    const hashedPassword = await bcrypt.hash(password, salt);
+    
+    user.password = hashedPassword;
     await user.save();
-    console.log(`Password updated for user: ${user.email}`);
-    res.json({ message: 'Password updated successfully' });
-  } catch (error) {
-    console.error('Error updating password:', error);
-    res.status(500).json({ error: 'Error updating password' });
-  }
-});
 
-app.post('/api/users/forgot-password', async (req, res) => {
-  try {
-    const { email } = req.body;
-    if (!email) {
-      return res.status(400).json({ error: 'Email is required' });
-    }
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-    const resetToken = crypto.randomBytes(20).toString('hex');
-    user.resetPasswordToken = resetToken;
-    user.resetPasswordExpires = Date.now() + 3600000;
-    await user.save();
-    console.log(`Password reset token for ${user.email}: ${resetToken}`);
-    res.json({ message: 'Password reset token has been sent to your email' });
+    return res.json({ message: 'Password updated successfully.' });
   } catch (error) {
-    console.error('Error in forgot-password:', error);
-    res.status(500).json({ error: 'Error processing forgot password' });
+    console.error('Error in reset-password:', error);
+    res.status(500).json({ message: 'Server error.' });
   }
 });
 

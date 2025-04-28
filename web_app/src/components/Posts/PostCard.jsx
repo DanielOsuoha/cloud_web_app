@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react'; 
+import React, { useState, useContext } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../../context/AuthContext';
 
@@ -16,16 +16,16 @@ const PostCard = ({ post }) => {
 
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!token) {
       alert('Please login to comment');
       return;
     }
-
     if (!commentText.trim()) {
       alert('Comment cannot be empty');
       return;
     }
+
     setCommentLoading(true);
     setCommentError('');
 
@@ -40,7 +40,7 @@ const PostCard = ({ post }) => {
           }
         }
       );
-      
+      console.log('Response from posting comment:', response);
       setComments(prev => [...prev, response.data]);
       setCommentText('');
       window.location.reload();
@@ -54,6 +54,7 @@ const PostCard = ({ post }) => {
 
   const handleDeleteComment = async (commentId) => {
     try {
+      console.log("Deleting comment with id:", commentId);
       await axios.delete(
         `http://localhost:5000/api/posts/${post._id}/comments/${commentId}`,
         {
@@ -63,9 +64,8 @@ const PostCard = ({ post }) => {
           }
         }
       );
-      
       setComments(prevComments =>
-        prevComments.filter(comment => comment._id !== commentId)
+        prevComments.filter(comment => comment.id !== commentId)
       );
     } catch (error) {
       console.error('Error deleting comment:', error.response?.data || error);
@@ -73,8 +73,6 @@ const PostCard = ({ post }) => {
     }
   };
 
-
-  
   return (
     <div className="post-card">
       <div className="post-header">
@@ -114,15 +112,16 @@ const PostCard = ({ post }) => {
             <div key={comment._id} className="comment-item">
               <div className="comment-header">
                 <div className="comment-username">By {comment.username}</div>
+                {console.log(comment.comment_id)}
                 <span className="comment-date">
                   {new Date(comment.date).toLocaleString()}
                 </span>
                 {user?.username === comment.username && (
                   <button
                     className="delete-comment-button"
-                    onClick={() => handleDeleteComment(comment._id)}
+                    onClick={() => handleDeleteComment(comment.id)}
                   >
-                    Delete {comment._id} {post._id}
+                    Delete {comment.id}
                   </button>
                 )}
               </div>
