@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../../context/AuthContext';
 
@@ -8,7 +8,30 @@ const PostCard = ({ post }) => {
   const [commentText, setCommentText] = useState('');
   const [commentLoading, setCommentLoading] = useState(false);
   const [commentError, setCommentError] = useState('');
-  const [comments, setComments] = useState(post.comments || []);
+  const [comments, setComments] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchComments = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/api/posts/${post._id}/comments`, 
+          {
+            headers: token ? {
+              'Authorization': `Bearer ${token}`
+            } : {}
+          }
+        );
+        setComments(response.data);
+      } catch (err) {
+        console.error(`Error fetching comments for post ${post._id}:`, err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchComments();
+  }, [post._id, token]);
 
   const handleCommentToggle = () => {
     setShowCommentForm(prev => !prev);
@@ -54,9 +77,26 @@ const PostCard = ({ post }) => {
   const handleDeleteComment = async (commentId) => {
     if (!window.confirm("Are you sure you want to delete this comment?")) return;
     
-    setComments(prevComments =>
-      prevComments.filter(comment => comment._id !== commentId)
-    );
+    try {
+      await axios.post(
+        `http://localhost:5000/api/comments/${commentId}/delete`,
+        {},
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
+      
+      // Remove deleted comment from state
+      setComments(prevComments =>
+        prevComments.filter(comment => comment._id !== commentId)
+      );
+    } catch (error) {
+      console.error('Error deleting comment:', error);
+      alert('Failed to delete comment. Please try again.');
+    }
   };
 
   const handleUpdateComment = async (commentId) => {
@@ -65,11 +105,29 @@ const PostCard = ({ post }) => {
       alert("Updated comment cannot be empty");
       return;
     }
-    setComments(prevComments =>
-      prevComments.map(c =>
-        c._id === commentId ? { ...c, comment: updatedCommentText } : c
-      )
-    );
+    
+    try {
+      const response = await axios.post(
+        `http://localhost:5000/api/comments/${commentId}/update`,
+        { comment: updatedCommentText },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
+      
+      // Update comment in state with the response data
+      setComments(prevComments =>
+        prevComments.map(c =>
+          c._id === commentId ? response.data : c
+        )
+      );
+    } catch (error) {
+      console.error('Error updating comment:', error);
+      alert('Failed to update comment. Please try again.');
+    }
   };
 
   return (
@@ -107,16 +165,20 @@ const PostCard = ({ post }) => {
           </button>
         </form>
       )}
-      {comments.length > 0 && (
+      {loading ? (
+        <p>Loading comments...</p>
+      ) : comments.length > 0 ? (
         <div className="comments-section">
           {comments.map((comment) => (
             <div key={comment._id} className="comment-item">
               <div className="comment-header">
-                <div className="comment-username">By {comment.username}</div>
+                <div className="comment-username">    
+                  By {typeof comment.user === 'object' ? comment.user.username : 'Unknown User'}
+                </div>
                 <span className="comment-date">
                   {new Date(comment.date).toLocaleString()}
                 </span>
-                {user?.username === comment.username && (
+                {user?.username === (typeof comment.user === 'object' ? comment.user.username : '') && (
                   <>
                   <button
                     className="delete-comment-button"
@@ -133,10 +195,12 @@ const PostCard = ({ post }) => {
                   </>
                 )}
               </div>
-              <div className="comment-content">{comment.comment}</div>
+              <div className="comment-content">{comment.content}</div>
             </div>
           ))}
         </div>
+      ) : (
+        <p className="no-comments">No comments yet</p>
       )}
     </div>
   );

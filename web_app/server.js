@@ -75,7 +75,7 @@ app.post('/api/posts/:postId/comments', auth, async (req, res) => {
   try {
     const { postId } = req.params;
     const { comment } = req.body;
-    
+    console.log('Received comment:', comment); 
     if (!comment || !comment.trim()) {
       return res.status(400).json({ error: 'Comment cannot be empty' });
     }
@@ -93,7 +93,6 @@ app.post('/api/posts/:postId/comments', auth, async (req, res) => {
     });
     
     await newComment.save();
-    // Optionally, you could also return the populated comment:
     const populatedComment = await newComment.populate('user', 'username');
     res.json(populatedComment);
   } catch (error) {
@@ -103,9 +102,12 @@ app.post('/api/posts/:postId/comments', auth, async (req, res) => {
 });
 
 app.get('/api/posts/:postId/comments', auth, async (req, res) => {
+  console.log('Fetching comments for post:', req.params.postId); // Fixed the typo
   try {
     const { postId } = req.params;
-    const comments = await Comment.find({ post: postId }).populate('user', 'username');
+    const comments = await Comment.find({ post: postId })
+      .sort({ date: -1 })
+      .populate('user', 'username');
     res.json(comments);
   } catch (error) {
     console.error('Error fetching comments:', error);
@@ -116,13 +118,11 @@ app.get('/api/posts/:postId/comments', auth, async (req, res) => {
 
 
 app.post('/api/posts', auth, async (req, res) => {
-  console.log(req.user._id)
   try {
+    const userId = typeof req.user._id === 'string' ? req.user._id : String(req.user._id);
     const { content } = req.body; 
-    const userId = req.user.id || req.user._id;
-    console.log(userId);
     const post = new Post({
-      author: userId,
+      author: new mongoose.Types.ObjectId(userId),
       content: content,
       date: new Date()
     });
@@ -134,6 +134,7 @@ app.post('/api/posts', auth, async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
 
 
 app.post('/api/users/signup', async (req, res) => {
