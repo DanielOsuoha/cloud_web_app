@@ -10,6 +10,7 @@ import Comment from './src/models/Comment.js';
 import auth from './src/middleware/auth.js';
 import dotenv from 'dotenv';
 dotenv.config();
+const PORT = 5000;
 
 const app = express();
 app.use(cors());
@@ -19,16 +20,35 @@ const JWT_SECRET = process.env.JWT_SECRET || 'x7RTp9JqK5vM3nL8';
 const MONGODB_URI = "mongodb://localhost:27017/social_app";
 
 mongoose.connect(MONGODB_URI)
-  .then(() => console.log('Connected to social_app MongoDB'))
-  .catch(err => console.error('MongoDB connection error:', err));
+.then(() => console.log('Connected to social_app MongoDB'))
+.catch(err => console.error('MongoDB connection error:', err));
 
+
+app.post('/api/comments/:commentId/delete', auth, async (req, res) => {
+  try {
+    const { commentId } = req.params;
+    const comment = await Comment.findById(commentId).populate('user', 'username');
+    if (!comment) {
+      return res.status(404).json({ error: 'Comment not found.' });
+    }
+    if (comment.user._id.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ error: 'Not authorized to delete this comment.' });
+    }
+    await comment.deleteOne();
+
+    res.json({ message: 'Comment deleted successfully', deletedComment: comment });
+  } catch (error) {
+    console.error('Delete comment error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
 
 app.get('/api/posts', async (req, res) => {
   try {
     if (mongoose.connection.readyState !== 1) {
       throw new Error('Database not connected');
     }
-
+    
     console.log('Fetching posts...');
     const posts = await Post.find()
       .sort({ date: -1 })
@@ -61,7 +81,7 @@ app.post('/api/posts', auth, async (req, res) => {
   }
 });
 
-app.post('/api/posts/:postId/comments', auth, async (req, res) => {
+app.post('/api/posts/:postId/comment', auth, async (req, res) => {
   try {
     const { postId } = req.params;
     const { comment } = req.body;
@@ -103,24 +123,6 @@ app.get('/api/posts/:postId/comments', auth, async (req, res) => {
   }
 });
 
-app.delete('/api/comments/:commentId', auth, async (req, res) => {
-  try {
-    const { commentId } = req.params;
-    const comment = await Comment.findById(commentId).populate('user', 'username');
-    if (!comment) {
-      return res.status(404).json({ error: 'Comment not found.' });
-    }
-    if (comment.user._id.toString() !== req.user._id.toString()) {
-      return res.status(403).json({ error: 'Not authorized to delete this comment.' });
-    }
-    await comment.deleteOne();
-
-    res.json({ message: 'Comment deleted successfully', deletedComment: comment });
-  } catch (error) {
-    console.error('Delete comment error:', error);
-    res.status(500).json({ error: error.message });
-  }
-});
 
 app.post('/api/users/signup', async (req, res) => {
   try {
@@ -247,6 +249,33 @@ app.put('/api/posts/:id', auth, async (req, res) => {
   }
 });
 
+app.post('/api/comments/:commentId/update', auth, async (req, res) => {
+  try {
+    const { commentId } = req.params;
+    const { comment } = req.body;
+    
+    if (!comment || !comment.trim()) {
+      return res.status(400).json({ error: 'Updated comment cannot be empty' });
+    }
+    
+    const existingComment = await Comment.findById(commentId);
+    if (!existingComment) {
+      return res.status(404).json({ error: 'Comment not found.' });
+    }
+    
+    if (existingComment.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ error: 'Not authorized to update this comment.' });
+    }
+    
+    existingComment.content = comment.trim();
+    await existingComment.save();
+    
+    const populatedComment = await existingComment.populate('user', 'username');
+    res.json(populatedComment);
+  } catch (error) {
+    console.error('Error updating comment:', error);
+    res.status(500).json({ error: 'Error updating comment' });
+  }
+});
 
-const PORT = 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

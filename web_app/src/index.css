@@ -577,3 +577,19 @@ button:focus-visible {
 .delete-comment-button:hover {
   background-color: #d71616;
 }
+
+.update-comment-button {
+  background: #ffc107;
+  color: #333;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background 0.3s ease;
+  margin-left: 0.5rem;
+}
+
+.update-comment-button:hover {
+  background: #e0a800;
+}

@@ -31,7 +31,7 @@ const PostCard = ({ post }) => {
 
     try {
       const response = await axios.post(
-        `http://localhost:5000/api/posts/${post._id}/comments`,
+        `http://localhost:5000/api/posts/${post._id}/comment`,
         { comment: commentText },
         {
           headers: {
@@ -55,9 +55,9 @@ const PostCard = ({ post }) => {
     if (!window.confirm("Are you sure you want to delete this comment?")) return;
 
     try {
-      console.log("Deleting comment with id:", commentId);
-      await axios.delete(
-        `http://localhost:5000/api/comments/${commentId}`,
+      const response = await axios.post(
+        `http://localhost:5000/api/comments/${commentId}/delete`,
+        {comment: commentText}, 
         {
           headers: {
             'Content-Type': 'application/json',
@@ -65,12 +65,41 @@ const PostCard = ({ post }) => {
           }
         }
       );
+      console.log('Response from deleting comment:', response);
       setComments(prevComments =>
         prevComments.filter(comment => comment._id !== commentId)
       );
     } catch (error) {
       console.error('Error deleting comment:', error.response?.data || error);
       alert('Failed to delete comment. Please try again.');
+    }
+  };
+
+  const handleUpdateComment = async (commentId) => {
+    const updatedCommentText = window.prompt("Enter the updated comment:");
+    if (!updatedCommentText || !updatedCommentText.trim()) {
+      alert("Updated comment cannot be empty");
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        `http://localhost:5000/api/comments/${commentId}/update`,
+        { comment: updatedCommentText },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
+      console.log('Response from updating comment:', response);
+      setComments(prevComments =>
+        prevComments.map(c => (c._id === commentId ? response.data : c))
+      );
+    } catch (error) {
+      console.error('Error updating comment:', error.response?.data || error);
+      alert('Failed to update comment. Please try again.');
     }
   };
 
@@ -117,12 +146,20 @@ const PostCard = ({ post }) => {
                   {new Date(comment.date).toLocaleString()}
                 </span>
                 {user?.username === comment.username && (
+                  <>
                   <button
                     className="delete-comment-button"
                     onClick={() => handleDeleteComment(comment._id)}
                   >
                     Delete
                   </button>
+                  <button
+                    className="update-comment-button"
+                    onClick={() => handleUpdateComment(comment._id)}
+                  >
+                    Update
+                  </button>
+                  </>
                 )}
               </div>
               <div className="comment-content">{comment.comment}</div>
