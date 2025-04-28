@@ -80,8 +80,6 @@ app.post('/api/posts/:postId/comments', auth, async (req, res) => {
 
     post.comments.push(newComment);
     await post.save();
-
-    // Return only the new comment that was just added
     const addedComment = post.comments[post.comments.length - 1];
     res.json(addedComment);
   } catch (error) {
@@ -224,8 +222,7 @@ app.post('/api/users/forgot-password', async (req, res) => {
   }
 });
 
-// Delete post
-app.delete('/api/posts/:id', auth, async (req, res) => {
+app.post('/api/posts/:id', auth, async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
     if (!post) return res.status(404).json({ error: 'Post not found' });

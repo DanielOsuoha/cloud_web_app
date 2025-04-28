@@ -51,7 +51,7 @@ const PostCard = ({ post }) => {
   const handleDeleteComment = async (index) => {
     console.log('Deleting comment at index:', index, comments);
     try {
-      await axios.delete(
+      await axios.post(
         `http://localhost:5000/api/posts/${post._id}/comments/${index}`,
         {
           headers: {
