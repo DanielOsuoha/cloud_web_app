@@ -251,14 +251,14 @@ app.put('/api/posts/:id', auth, async (req, res) => {
   }
 });
 
-app.delete('/api/posts/:postId/comments/:commentIndex', auth, async (req, res) => {
+app.post('/api/posts/:postId/comments/:commentIndex/delete', auth, async (req, res) => {
   try {
-    const { postId } = req.params;
-    const commentIndex = parseInt(req.params.commentIndex, 10);
+    const { postId, commentIndex } = req.params;
+    const index = parseInt(commentIndex, 10);
 
     console.log('Delete comment request:', {
       postId,
-      commentIndex,
+      commentIndex: index,
       username: req.user.username
     });
 
@@ -268,27 +268,26 @@ app.delete('/api/posts/:postId/comments/:commentIndex', auth, async (req, res) =
       return res.status(404).json({ error: 'Post not found' });
     }
 
-    console.log('Post comments length:', post.comments.length);
-    if (isNaN(commentIndex) || commentIndex < 0 || commentIndex >= post.comments.length) {
-      console.log('Comment index invalid:', commentIndex);
+    if (isNaN(index) || index < 0 || index >= post.comments.length) {
+      console.log('Comment index invalid:', index);
       return res.status(404).json({ error: 'Comment not found' });
     }
 
-    const comment = post.comments[commentIndex];
+    const comment = post.comments[index];
     if (comment.username !== req.user.username) {
       return res.status(403).json({ error: 'Not authorized to delete this comment' });
     }
 
-    post.comments.splice(commentIndex, 1);
+    post.comments.splice(index, 1);
     await post.save();
 
-    res.json({ 
+    res.json({
       message: 'Comment deleted successfully',
       deletedComment: comment
     });
   } catch (error) {
     console.error('Delete comment error:', error);
-    res.status(500).json({ error: 'Error deleting comment' });
+    res.status(500).json({ error: error.message });
   }
 });
 

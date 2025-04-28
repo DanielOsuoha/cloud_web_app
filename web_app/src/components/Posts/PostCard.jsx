@@ -52,8 +52,9 @@ const PostCard = ({ post }) => {
     console.log('Deleting comment at index:', index, comments);
     try {
       await axios.post(
-        `http://localhost:5000/api/posts/${post._id}/comments/${index}`,
-        {
+        `http://localhost:5000/api/posts/${post._id}/comments/${index}/delete`,
+        {},  // empty body
+        {    // config object with headers
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
@@ -65,7 +66,7 @@ const PostCard = ({ post }) => {
         prevComments.filter((_, i) => i !== index)
       );
     } catch (error) {
-      console.error('Error deleting comment:', error);
+      console.error('Error deleting comment:', error.response?.data || error);
       alert('Failed to delete comment');
     }
   };
