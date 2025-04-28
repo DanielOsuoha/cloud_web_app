@@ -28,8 +28,15 @@
 
 
 import mongoose from 'mongoose';
+import AutoIncrementFactory from 'mongoose-sequence';
+
+const AutoIncrement = AutoIncrementFactory(mongoose);
 
 const commentSchema = new mongoose.Schema({
+  id: {
+    type: Number,
+    // "required" is optional because the plugin fills it in
+  },
   comment: {
     type: String,
     required: true
@@ -43,6 +50,9 @@ const commentSchema = new mongoose.Schema({
     default: Date.now
   }
 });
+
+// Apply the plugin to the commentSchema to auto increment the "id" field.
+commentSchema.plugin(AutoIncrement, { inc_field: 'id', id: 'comment_seq' });
 
 const postSchema = new mongoose.Schema({
   author: {
