@@ -6,6 +6,7 @@ import User from './src/models/User.js';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import Post from './src/models/Post.js';
+import Comment from './src/models/Comment.js';
 import auth from './src/middleware/auth.js';
 import dotenv from 'dotenv';
 dotenv.config();
@@ -102,36 +103,25 @@ app.get('/api/posts/:postId/comments', auth, async (req, res) => {
   }
 });
 
-app.delete('/api/posts/:postId/comments/:commentIndex/', auth, async (req, res) => {
+app.delete('/api/comments/:commentId', auth, async (req, res) => {
   try {
-    const { postId, commentIndex } = req.params;
-    const index = parseInt(commentIndex, 10);
-    const post = await Post.findById(postId);
-    if (!post) {
-      return res.status(404).json({ error: 'Post not found' });
+    const { commentId } = req.params;
+    const comment = await Comment.findById(commentId).populate('user', 'username');
+    if (!comment) {
+      return res.status(404).json({ error: 'Comment not found.' });
     }
-
-    if (isNaN(index) || index < 0 || index >= post.comments.length) {
-      return res.status(404).json({ error: 'Comment not found' });
+    if (comment.user._id.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ error: 'Not authorized to delete this comment.' });
     }
+    await comment.deleteOne();
 
-    const comment = post
-    if (comment.username !== req.user.username) {
-      return res.status(403).json({ error: 'Not authorized to delete this comment' });
-    }
-
-    post.comments.splice(index, 1);
-    await post.save();
-
-    res.json({
-      message: 'Comment deleted successfully',
-      deletedComment: comment
-    });
+    res.json({ message: 'Comment deleted successfully', deletedComment: comment });
   } catch (error) {
     console.error('Delete comment error:', error);
     res.status(500).json({ error: error.message });
   }
 });
+
 app.post('/api/users/signup', async (req, res) => {
   try {
     const { username, email, password } = req.body;
