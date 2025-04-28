@@ -40,6 +40,7 @@ const PostCard = ({ post }) => {
           }
         }
       );
+      console.log(response)
       
       setComments(prev => [...prev, response.data]);
       setCommentText('');
