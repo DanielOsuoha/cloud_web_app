@@ -1,21 +1,25 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Landing from './components/Landing';
 import Login from './components/Auth/Login';
-import SignUp from './components/Auth/SignUp';
-import ForgotPassword from './components/Auth/ForgotPassword'; // adjust the path if needed
+import Signup from './components/Auth/Signup';
+import UpdatePassword from './components/Auth/UpdatePassword';
+import { AuthProvider } from './context/AuthContext';
+// import PrivateRoute from './components/Auth/PrivateRoute';
 
 function App() {
   return (
     <Router>
-      <div className="app">
+      <AuthProvider>
         <Routes>
-          <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/update-password" element={
+              <UpdatePassword />
+          } />
+          <Route path="/" element={<Landing />} />
         </Routes>
-      </div>
+      </AuthProvider>
     </Router>
   );
 }

@@ -1,0 +1,66 @@
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 20px;
+  width: 100%;
+}
+
+.welcome-section {
+  flex: 1;
+}
+
+.auth-controls {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.welcome-message {
+  margin-right: 30px;
+}
+
+.welcome-message h1 {
+  font-size: 2rem;
+  margin-bottom: 10px;
+  color: #2d3748;
+}
+
+.welcome-message p {
+  font-size: 1.1rem;
+  color: #718096;
+}
+
+.logout-container {
+  display: flex;
+  align-items: center;
+}
+
+.update-password-link {
+  color: #3182ce;
+  text-decoration: none;
+  font-weight: 500;
+  margin-left: 15px;
+  margin-right: 10px;
+  margin-top: 15px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  background-color: rgba(49, 130, 206, 0.1);
+}
+
+.update-password-link:hover {
+  background-color: rgba(49, 130, 206, 0.2);
+  color: #2c5282;
+}
+
+@media (max-width: 768px) {
+  .header-content {
+    flex-direction: column;
+  }
+  
+  .auth-controls {
+    width: 100%;
+    margin-top: 20px;
+    justify-content: flex-start;
+  }
+}

@@ -77,17 +77,15 @@ const PostCard = ({ post }) => {
     if (!window.confirm("Are you sure you want to delete this comment?")) return;
     
     try {
-      await axios.post(
-        `http://localhost:5000/api/comments/${commentId}/delete`,
-        {},
+      await axios.delete(
+        `http://localhost:5000/api/comments/${commentId}`,
         {
           headers: {
-            'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
           }
         }
       );
-      
+        
       // Remove deleted comment from state
       setComments(prevComments =>
         prevComments.filter(comment => comment._id !== commentId)
@@ -106,8 +104,8 @@ const PostCard = ({ post }) => {
     }
     
     try {
-      const response = await axios.post(
-        `http://localhost:5000/api/comments/${commentId}/update`,
+      const response = await axios.put(
+        `http://localhost:5000/api/comments/${commentId}`,
         { comment: updatedCommentText },
         {
           headers: {
@@ -117,6 +115,7 @@ const PostCard = ({ post }) => {
         }
       );
       
+      // Update comment in state with the response data
       setComments(prevComments =>
         prevComments.map(c =>
           c._id === commentId ? response.data : c

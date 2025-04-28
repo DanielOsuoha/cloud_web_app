@@ -50,24 +50,27 @@ app.get('/api/posts', async (req, res) => {
 });
 
 
-// app.post('/api/comments/:commentId/delete', auth, async (req, res) => {
-//   try {
-//     const { commentId } = req.params;
-//     const comment = await Comment.findById(commentId).populate('user', 'username');
-//     if (!comment) {
-//       return res.status(404).json({ error: 'Comment not found.' });
-//     }
-//     if (comment.user._id.toString() !== req.user._id.toString()) {
-//       return res.status(403).json({ error: 'Not authorized to delete this comment.' });
-//     }
-//     await comment.deleteOne();
-
-//     res.json({ message: 'Comment deleted successfully', deletedComment: comment });
-//   } catch (error) {
-//     console.error('Delete comment error:', error);
-//     res.status(500).json({ error: error.message });
-//   }
-// });
+app.delete('/api/comments/:commentId', auth, async (req, res) => {
+  try {
+    const { commentId } = req.params;
+    const comment = await Comment.findById(commentId).populate('user', 'username');
+    
+    if (!comment) {
+      return res.status(404).json({ error: 'Comment not found.' });
+    }
+    
+    if (comment.user._id.toString() !== req.user.id.toString()) {
+      return res.status(403).json({ error: 'Not authorized to delete this comment.' });
+    }
+    
+    await comment.deleteOne();
+    
+    res.json({ message: 'Comment deleted successfully', deletedComment: comment });
+  } catch (error) {
+    console.error('Delete comment error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
 
 
 
@@ -136,35 +139,35 @@ app.post('/api/posts', auth, async (req, res) => {
 
 
 
-// app.post('/api/users/signup', async (req, res) => {
-//   try {
-//     const { username, email, password } = req.body;
-//     console.log('Received signup request for:', email);
+app.post('/api/users/signup', async (req, res) => {
+  try {
+    const { username, email, password } = req.body;
+    console.log('Received signup request for:', email);
     
-//     const salt = await bcrypt.genSalt(10);
-//     const hashedPassword = await bcrypt.hash(password, salt);
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
-//     const user = new User({
-//       username,
-//       email,
-//       password: hashedPassword
-//     });
+    const user = new User({
+      username,
+      email,
+      password: hashedPassword
+    });
 
-//     await user.save();
-//     res.status(201).json({
-//       success: true,
-//       user: {
-//         id: user._id,
-//         username: user.username,
-//         email: user.email
-//       }
-//     });
+    await user.save();
+    res.status(201).json({
+      success: true,
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email
+      }
+    });
 
-//   } catch (error) {
-//     console.error('Signup error:', error);
-//     res.status(500).json({ error: 'Error creating user' });
-//   }
-// });
+  } catch (error) {
+    console.error('Signup error:', error);
+    res.status(500).json({ error: 'Error creating user' });
+  }
+});
 
 app.post('/api/users/login', async (req, res) => {
   try {
@@ -232,6 +235,35 @@ app.post('/api/users/reset-password', async (req, res) => {
   }
 });
 
+app.put('/api/comments/:commentId', auth, async (req, res) => {
+  try {
+    const { commentId } = req.params;
+    const { comment } = req.body;
+    
+    if (!comment || !comment.trim()) {
+      return res.status(400).json({ error: 'Updated comment cannot be empty' });
+    }
+    
+    const existingComment = await Comment.findById(commentId).populate('user', 'username');
+    if (!existingComment) {
+      return res.status(404).json({ error: 'Comment not found.' });
+    }
+    
+    if (existingComment.user._id.toString() !== req.user.id.toString()) {
+      return res.status(403).json({ error: 'Not authorized to update this comment.' });
+    }
+    
+    existingComment.content = comment.trim();
+    await existingComment.save();
+    
+    // Return the updated comment with populated user field
+    res.json(existingComment);
+  } catch (error) {
+    console.error('Error updating comment:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // app.post('/api/posts/:id', auth, async (req, res) => {
 //   try {
 //     const post = await Post.findById(req.params.id);
@@ -287,6 +319,32 @@ app.post('/api/users/reset-password', async (req, res) => {
 //   } catch (error) {
 //     console.error('Error updating comment:', error);
 //     res.status(500).json({ error: 'Error updating comment' });
+//   }
+// });
+
+
+
+// app.post('/api/users/verify-email', auth, async (req, res) => {
+//   try {
+//     const { email } = req.body;
+    
+//     // Check if this email belongs to the authenticated user
+//     const user = await User.findOne({ email });
+    
+//     if (!user) {
+//       return res.status(404).json({ error: 'No account found with this email address' });
+//     }
+    
+//     // Verify that the email belongs to the authenticated user
+//     if (user._id.toString() !== req.user.id.toString()) {
+//       return res.status(403).json({ error: 'This email address does not match your account' });
+//     }
+    
+//     // Email verification successful
+//     res.json({ message: 'Email verified successfully' });
+//   } catch (error) {
+//     console.error('Email verification error:', error);
+//     res.status(500).json({ error: error.message });
 //   }
 // });
 
