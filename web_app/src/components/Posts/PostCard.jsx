@@ -48,10 +48,10 @@ const PostCard = ({ post }) => {
     }
   };
 
-  const handleDeleteComment = async (index) => {
+  const handleDeleteComment = async (commentId) => {
     try {
       await axios.delete(
-        `http://localhost:5000/api/posts/${post._id}/comments/${index}/delete`,
+        `http://localhost:5000/api/posts/${post._id}/comments/${commentId}`,
         {
           headers: {
             'Content-Type': 'application/json',
@@ -60,8 +60,8 @@ const PostCard = ({ post }) => {
         }
       );
       
-      setComments(prevComments => 
-        prevComments.filter((_, i) => i !== index)
+      setComments(prevComments =>
+        prevComments.filter(comment => comment._id !== commentId)
       );
     } catch (error) {
       console.error('Error deleting comment:', error.response?.data || error);
@@ -69,6 +69,8 @@ const PostCard = ({ post }) => {
     }
   };
 
+
+  
   return (
     <div className="post-card">
       <div className="post-header">
@@ -104,17 +106,17 @@ const PostCard = ({ post }) => {
       )}
       {comments.length > 0 && (
         <div className="comments-section">
-          {comments.map((comment, index) => (
-            <div key={index} className="comment-item">
+          {comments.map((comment) => (
+            <div key={comment._id} className="comment-item">
               <div className="comment-header">
                 <div className="comment-username">By {comment.username}</div>
                 <span className="comment-date">
                   {new Date(comment.date).toLocaleString()}
                 </span>
                 {user?.username === comment.username && (
-                  <button 
+                  <button
                     className="delete-comment-button"
-                    onClick={() => handleDeleteComment(index)}
+                    onClick={() => handleDeleteComment(comment._id)}
                   >
                     Delete
                   </button>

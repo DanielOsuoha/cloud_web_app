@@ -249,8 +249,7 @@ app.put('/api/posts/:id', auth, async (req, res) => {
   }
 });
 
-app.delete('/api/posts/:postId/comments/:commentIndex/delete', auth, async (req, res) => {
-  console.log('delete343')
+app.delete('/api/posts/:postId/comments/:commentIndex/', auth, async (req, res) => {
   try {
     const { postId, commentIndex } = req.params;
     const index = parseInt(commentIndex, 10);
