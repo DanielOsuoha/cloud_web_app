@@ -112,7 +112,6 @@ const PostCard = ({ post }) => {
             <div key={comment._id} className="comment-item">
               <div className="comment-header">
                 <div className="comment-username">By {comment.username}</div>
-                {console.log(comment.comment_id)}
                 <span className="comment-date">
                   {new Date(comment.date).toLocaleString()}
                 </span>
