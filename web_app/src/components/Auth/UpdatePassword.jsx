@@ -93,7 +93,6 @@ const UpdatePassword = () => {
         <h2>Update Your Password</h2>
         
         {!emailVerified ? (
-          // Step 1: Email verification form
           <form onSubmit={handleVerifyEmail} className="update-password-form">
             <div className="form-group">
               <label>Your Email Address:</label>
@@ -128,7 +127,6 @@ const UpdatePassword = () => {
             </div>
           </form>
         ) : (
-          // Step 2: Password update form (shown after email verification)
           <form onSubmit={handlePasswordUpdate} className="update-password-form">
             <div className="form-group">
               <label>Current Password:</label>

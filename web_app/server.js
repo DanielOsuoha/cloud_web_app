@@ -324,28 +324,60 @@ app.put('/api/comments/:commentId', auth, async (req, res) => {
 
 
 
-// app.post('/api/users/verify-email', auth, async (req, res) => {
-//   try {
-//     const { email } = req.body;
+app.post('/api/users/verify-email', auth, async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ error: 'No account found with this email address' });
+    }
+    if (user._id.toString() !== req.user.id.toString()) {
+      return res.status(403).json({ error: 'This email address does not match your account' });
+    }
+    res.json({ message: 'Email verified successfully' });
+  } catch (error) {
+    console.error('Email verification error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.put('/api/users/password', auth, async (req, res) => {
+  try {
+    const { email, currentPassword, newPassword } = req.body;
+    if (!email || !currentPassword || !newPassword) {
+      return res.status(400).json({ error: 'All fields are required' });
+    }
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    if (user.email !== email) {
+      return res.status(400).json({ error: 'Email does not match your account' });
+    }
+    const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+    if (!isPasswordValid) {
+      return res.status(400).json({ error: 'Current password is incorrect' });
+    }
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!passwordRegex.test(newPassword)) {
+      return res.status(400).json({ 
+        error: 'Password must be at least 8 characters and include uppercase, lowercase, number and special character'
+      });
+    }
+    const isSamePassword = await bcrypt.compare(newPassword, user.password);
+    if (isSamePassword) {
+      return res.status(400).json({ error: 'New password must be different from current password' });
+    }
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(newPassword, salt);
+    await user.save();
+    console.log(`Password updated for user: ${user.email} at ${new Date()}`);
     
-//     // Check if this email belongs to the authenticated user
-//     const user = await User.findOne({ email });
-    
-//     if (!user) {
-//       return res.status(404).json({ error: 'No account found with this email address' });
-//     }
-    
-//     // Verify that the email belongs to the authenticated user
-//     if (user._id.toString() !== req.user.id.toString()) {
-//       return res.status(403).json({ error: 'This email address does not match your account' });
-//     }
-    
-//     // Email verification successful
-//     res.json({ message: 'Email verified successfully' });
-//   } catch (error) {
-//     console.error('Email verification error:', error);
-//     res.status(500).json({ error: error.message });
-//   }
-// });
+    res.json({ message: 'Password updated successfully' });
+  } catch (error) {
+    console.error('Password update error:', error);
+    res.status(500).json({ error: 'Server error while updating password' });
+  }
+});
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
