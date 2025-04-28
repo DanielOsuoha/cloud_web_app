@@ -71,7 +71,7 @@ app.post('/api/posts/:postId/comments', auth, async (req, res) => {
     if (!post) {
       return res.status(404).json({ error: 'Post not found' });
     }
-
+    
     const newComment = {
       comment,
       username: req.user.username,
@@ -102,11 +102,41 @@ app.get('/api/posts/:postId/comments', auth, async (req, res) => {
   }
 });
 
+app.delete('/api/posts/:postId/comments/:commentIndex/', auth, async (req, res) => {
+  try {
+    const { postId, commentIndex } = req.params;
+    const index = parseInt(commentIndex, 10);
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({ error: 'Post not found' });
+    }
+
+    if (isNaN(index) || index < 0 || index >= post.comments.length) {
+      return res.status(404).json({ error: 'Comment not found' });
+    }
+
+    const comment = post.comments[index];
+    if (comment.username !== req.user.username) {
+      return res.status(403).json({ error: 'Not authorized to delete this comment' });
+    }
+
+    post.comments.splice(index, 1);
+    await post.save();
+
+    res.json({
+      message: 'Comment deleted successfully',
+      deletedComment: comment
+    });
+  } catch (error) {
+    console.error('Delete comment error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
 app.post('/api/users/signup', async (req, res) => {
   try {
     const { username, email, password } = req.body;
     console.log('Received signup request for:', email);
-
+    
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -249,36 +279,6 @@ app.put('/api/posts/:id', auth, async (req, res) => {
   }
 });
 
-app.delete('/api/posts/:postId/comments/:commentIndex/', auth, async (req, res) => {
-  try {
-    const { postId, commentIndex } = req.params;
-    const index = parseInt(commentIndex, 10);
-    const post = await Post.findById(postId);
-    if (!post) {
-      return res.status(404).json({ error: 'Post not found' });
-    }
-
-    if (isNaN(index) || index < 0 || index >= post.comments.length) {
-      return res.status(404).json({ error: 'Comment not found' });
-    }
-
-    const comment = post.comments[index];
-    if (comment.username !== req.user.username) {
-      return res.status(403).json({ error: 'Not authorized to delete this comment' });
-    }
-
-    post.comments.splice(index, 1);
-    await post.save();
-
-    res.json({
-      message: 'Comment deleted successfully',
-      deletedComment: comment
-    });
-  } catch (error) {
-    console.error('Delete comment error:', error);
-    res.status(500).json({ error: error.message });
-  }
-});
 
 const PORT = 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

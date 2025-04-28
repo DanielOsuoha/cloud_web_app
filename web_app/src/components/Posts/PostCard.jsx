@@ -40,7 +40,6 @@ const PostCard = ({ post }) => {
           }
         }
       );
-      console.log(response)
       
       setComments(prev => [...prev, response.data]);
       setCommentText('');
@@ -123,7 +122,7 @@ const PostCard = ({ post }) => {
                     className="delete-comment-button"
                     onClick={() => handleDeleteComment(comment._id)}
                   >
-                    Delete
+                    Delete {comment._id} {post._id}
                   </button>
                 )}
               </div>
