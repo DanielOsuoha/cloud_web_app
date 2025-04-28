@@ -251,25 +251,16 @@ app.put('/api/posts/:id', auth, async (req, res) => {
   }
 });
 
-app.post('/api/posts/:postId/comments/:commentIndex/delete', auth, async (req, res) => {
+app.delete('/api/posts/:postId/comments/:commentIndex/delete', auth, async (req, res) => {
   try {
-    const { postId, commentIndex } = req.params;
-    const index = parseInt(commentIndex, 10);
-
-    console.log('Delete comment request:', {
-      postId,
-      commentIndex: index,
-      username: req.user.username
-    });
-
+    const { postId } = req.params;
+    const index = parseInt(req.params.commentIndex, 10);
     const post = await Post.findById(postId);
     if (!post) {
-      console.log('Post not found:', postId);
       return res.status(404).json({ error: 'Post not found' });
     }
 
     if (isNaN(index) || index < 0 || index >= post.comments.length) {
-      console.log('Comment index invalid:', index);
       return res.status(404).json({ error: 'Comment not found' });
     }
 

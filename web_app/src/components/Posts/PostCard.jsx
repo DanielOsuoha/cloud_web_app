@@ -51,10 +51,9 @@ const PostCard = ({ post }) => {
   const handleDeleteComment = async (index) => {
     console.log('Deleting comment at index:', index, comments);
     try {
-      await axios.post(
+      await axios.delete(
         `http://localhost:5000/api/posts/${post._id}/comments/${index}/delete`,
-        {},  // empty body
-        {    // config object with headers
+        {
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
