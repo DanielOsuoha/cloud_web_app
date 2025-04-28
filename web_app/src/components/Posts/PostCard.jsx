@@ -52,10 +52,12 @@ const PostCard = ({ post }) => {
   };
 
   const handleDeleteComment = async (commentId) => {
+    if (!window.confirm("Are you sure you want to delete this comment?")) return;
+
     try {
       console.log("Deleting comment with id:", commentId);
       await axios.delete(
-        `http://localhost:5000/api/posts/${post._id}/comments/${commentId}`,
+        `http://localhost:5000/api/comments/${commentId}`,
         {
           headers: {
             'Content-Type': 'application/json',
@@ -68,7 +70,7 @@ const PostCard = ({ post }) => {
       );
     } catch (error) {
       console.error('Error deleting comment:', error.response?.data || error);
-      alert('Failed to delete comment');
+      alert('Failed to delete comment. Please try again.');
     }
   };
 
