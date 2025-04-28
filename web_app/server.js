@@ -256,7 +256,9 @@ app.put('/api/posts/:id', auth, async (req, res) => {
 
 app.delete('/api/posts/:postId/comments/:commentIndex', auth, async (req, res) => {
   try {
-    const { postId, commentIndex } = req.params;
+    const { postId } = req.params;
+    const commentIndex = parseInt(req.params.commentIndex, 10);
+
     console.log('Delete comment request:', {
       postId,
       commentIndex,
@@ -270,8 +272,8 @@ app.delete('/api/posts/:postId/comments/:commentIndex', auth, async (req, res) =
     }
 
     console.log('Post comments length:', post.comments.length);
-    if (commentIndex >= post.comments.length) {
-      console.log('Comment index out of bounds:', commentIndex);
+    if (isNaN(commentIndex) || commentIndex < 0 || commentIndex >= post.comments.length) {
+      console.log('Comment index invalid:', commentIndex);
       return res.status(404).json({ error: 'Comment not found' });
     }
 
@@ -283,7 +285,10 @@ app.delete('/api/posts/:postId/comments/:commentIndex', auth, async (req, res) =
     post.comments.splice(commentIndex, 1);
     await post.save();
 
-    res.json({ message: 'Comment deleted successfully' });
+    res.json({ 
+      message: 'Comment deleted successfully',
+      deletedComment: comment
+    });
   } catch (error) {
     console.error('Delete comment error:', error);
     res.status(500).json({ error: 'Error deleting comment' });
