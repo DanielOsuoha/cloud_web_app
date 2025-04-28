@@ -44,6 +44,49 @@ app.post('/api/comments/:commentId/delete', auth, async (req, res) => {
   }
 });
 
+
+
+app.post('/api/posts/:postId/comments', auth, async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const { comment } = req.body;
+    
+    if (!comment || !comment.trim()) {
+      return res.status(400).json({ error: 'Comment cannot be empty' });
+    }
+    
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({ error: 'Post not found' });
+    }
+    
+    const newComment = new Comment({
+      post: postId,
+      user: req.user._id,
+      content: comment.trim(),
+      date: new Date()
+    });
+    
+    await newComment.save();
+    // Optionally, you could also return the populated comment:
+    const populatedComment = await newComment.populate('user', 'username');
+    res.json(populatedComment);
+  } catch (error) {
+    console.error('Error adding comment:', error);
+    res.status(500).json({ error: 'Error adding comment' });
+  }
+});
+
+app.get('/api/posts/:postId/comments', auth, async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const comments = await Comment.find({ post: postId }).populate('user', 'username');
+    res.json(comments);
+  } catch (error) {
+    console.error('Error fetching comments:', error);
+    res.status(500).json({ error: 'Error fetching comments' });
+  }
+});
 app.get('/api/posts', async (req, res) => {
   try {
     if (mongoose.connection.readyState !== 1) {
@@ -68,64 +111,24 @@ app.get('/api/posts', async (req, res) => {
   }
 });
 
+
+
 app.post('/api/posts', auth, async (req, res) => {
   try {
     const userId = typeof req.user._id === 'string' ? req.user._id : String(req.user._id);
-
-  const post = new Post({
-    author : new mongoose.Types.ObjectId(userId),
-    content: content,
-    date   : new Date()
+    const { content } = req.body; 
     
-  });
-
+    const post = new Post({
+      author: new mongoose.Types.ObjectId(userId),
+      content: content,
+      date: new Date()
+    });
+    
     await post.save();
     res.json(post);
   } catch (error) {
     console.error('Error creating post:', error);
     res.status(500).json({ error: error.message });
-  }
-});
-
-app.post('/api/posts/:postId/comment', auth, async (req, res) => {
-  try {
-    const { postId } = req.params;
-    const { comment } = req.body;
-    
-    if (!comment || !comment.trim()) {
-      return res.status(400).json({ error: 'Comment cannot be empty' });
-    }
-    const post = await Post.findById(postId);
-    if (!post) {
-      return res.status(404).json({ error: 'Post not found' });
-    }
-    
-    const newComment = new Comment({
-      post: postId,
-      user: req.user._id,
-      content: comment.trim(),
-      date: new Date()
-    });
-    
-    await newComment.save();
-    
-    const populatedComment = await newComment.populate('user', 'username');
-
-    res.json(populatedComment);
-  } catch (error) {
-    console.error('Error adding comment:', error);
-    res.status(500).json({ error: 'Error adding comment' });
-  }
-});
-
-app.get('/api/posts/:postId/comments', auth, async (req, res) => {
-  try {
-    const { postId } = req.params;
-    const comments = await Comment.find({ post: postId }).populate('user', 'username');
-    res.json(comments);
-  } catch (error) {
-    console.error('Error fetching comments:', error);
-    res.status(500).json({ error: 'Error fetching comments' });
   }
 });
 
