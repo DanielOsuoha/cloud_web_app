@@ -108,7 +108,6 @@ app.post('/api/users/signup', async (req, res) => {
     const { username, email, password } = req.body;
     console.log('Received signup request for:', email);
 
-    // Generate salt and hash password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -252,6 +251,7 @@ app.put('/api/posts/:id', auth, async (req, res) => {
 });
 
 app.delete('/api/posts/:postId/comments/:commentIndex/delete', auth, async (req, res) => {
+  console.log('delete343')
   try {
     const { postId } = req.params;
     const index = parseInt(req.params.commentIndex, 10);
