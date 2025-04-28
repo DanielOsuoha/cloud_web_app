@@ -20,7 +20,7 @@ const Login = () => {
       });
  
       if (response.data.token) {
-        login(response.data.user, response.data.token); // Calling login from AuthContext
+        login(response.data.user, response.data.token); 
         navigate('/');
       }
     } catch (error) {

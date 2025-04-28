@@ -68,3 +68,30 @@ Social Cloud is a full-stack social media web application built with the MERN st
 git clone https://github.com/username/cloud_web_app.git
 cd cloud_web_app
 ```
+2. Install dependencies
+```bash
+
+cd web_app
+npm install
+```
+
+```bash
+cd client
+npm install
+```
+
+3. Environment configuration Create a .env file in the root directory with:
+```bash
+
+JWT_SECRET=your_jwt_secret_here
+MONGODB_URI=your_mongodb_connection_string
+PORT=5000
+
+```
+
+4. Start the application
+```bash
+npm run server
+
+npm start
+```
