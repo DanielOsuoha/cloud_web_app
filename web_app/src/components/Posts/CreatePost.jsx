@@ -11,11 +11,13 @@ const CreatePost = () => {
   const { isLoggedIn, token } = useContext(AuthContext);
 
   const handleSubmit = async (event) => {
+    if (content.trim().length === 0) {
+      alert('Comment cannot be empty');
+      return;
+    }
     event.preventDefault();
     setIsSubmitting(true);
-
     try {
-      console.log('Auth state:', { isLoggedIn, token });
       const response = await axios.post(
         'http://localhost:5000/api/posts',
         { content },

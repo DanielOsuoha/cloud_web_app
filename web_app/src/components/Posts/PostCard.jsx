@@ -22,6 +22,10 @@ const PostCard = ({ post }) => {
       return;
     }
 
+    if (!commentText.trim()) {
+      alert('Comment cannot be empty');
+      return;
+    }
     setCommentLoading(true);
     setCommentError('');
 
