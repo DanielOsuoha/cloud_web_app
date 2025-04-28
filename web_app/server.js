@@ -17,7 +17,8 @@ app.use(cors());
 app.use(express.json());
 
 const JWT_SECRET = process.env.JWT_SECRET || 'x7RTp9JqK5vM3nL8';
-const MONGODB_URI = "mongodb://localhost:27017/social_app";
+// const MONGODB_URI = process.env.MONGODB_URI || "mongodb+srv://dosuoha:4kP4P8QvytMlDIhm@cluster0.1ziqjik.mongodb.net/social_app?retryWrites=true&w=majority&appName=Cluster0";
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/social_app"; 
 
 mongoose.connect(MONGODB_URI)
 .then(() => console.log('Connected to social_app MongoDB'))
@@ -69,10 +70,15 @@ app.get('/api/posts', async (req, res) => {
 
 app.post('/api/posts', auth, async (req, res) => {
   try {
-    const post = new Post({
-      author: req.user.username,
-      content: req.body.content || 'Empty post'
-    });
+    const userId = typeof req.user._id === 'string' ? req.user._id : String(req.user._id);
+
+  const post = new Post({
+    author : new mongoose.Types.ObjectId(userId),
+    content: content,
+    date   : new Date()
+    
+  });
+
     await post.save();
     res.json(post);
   } catch (error) {
