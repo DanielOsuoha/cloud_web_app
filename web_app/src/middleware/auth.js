@@ -4,19 +4,19 @@ const JWT_SECRET = 'x7RTp9JqK5vM3nL8';
 
 const auth = (req, res, next) => {
   
-  console.log('🔒 Auth Check:', {
-    path: req.path,
-    method: req.method,
-    headers: req.headers
-  });
+  // console.log('🔒 Auth Check:', {
+  //   path: req.path,
+  //   method: req.method,
+  //   headers: req.headers
+  // });
 
   const token = req.headers.authorization;
   
-  console.log('Auth middleware check:', {
-    hasToken: !!token,
-    tokenStart: token?.substring(0, 20),
-    path: req.path
-  });
+  // console.log('Auth middleware check:', {
+  //   hasToken: !!token,
+  //   tokenStart: token?.substring(0, 20),
+  //   path: req.path
+  // });
 
   if (!token) {
     return res.status(401).json({ error: 'No token provided' });

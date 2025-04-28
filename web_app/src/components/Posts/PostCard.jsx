@@ -43,7 +43,7 @@ const PostCard = ({ post }) => {
       console.log('Response from posting comment:', response);
       setComments(prev => [...prev, response.data]);
       setCommentText('');
-      window.location.reload();
+      // window.location.reload();
     } catch (error) {
       console.error('Error posting comment:', error);
       setCommentError(error.response?.data?.error || 'Error posting comment');
