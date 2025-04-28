@@ -25,6 +25,31 @@ mongoose.connect(MONGODB_URI)
 .catch(err => console.error('MongoDB connection error:', err));
 
 
+app.get('/api/posts', async (req, res) => {
+  console.log('Fetching posts...');
+  try {
+    if (mongoose.connection.readyState !== 1) {
+      throw new Error('Database not connected');
+    }
+    
+    const posts = await Post.find()
+    .populate('author', 'username')      
+    .sort({ date: -1 });
+    console.log('Posts fetched:', posts);
+    res.setHeader('Content-Type', 'application/json');
+    res.status(200).json(posts);
+
+  } catch (err) {
+    console.error('Error fetching posts:', err);
+    res.setHeader('Content-Type', 'application/json');
+    res.status(500).json({ 
+      success: false,
+      error: err.message 
+    });
+  }
+});
+
+
 app.post('/api/comments/:commentId/delete', auth, async (req, res) => {
   try {
     const { commentId } = req.params;
@@ -87,39 +112,17 @@ app.get('/api/posts/:postId/comments', auth, async (req, res) => {
     res.status(500).json({ error: 'Error fetching comments' });
   }
 });
-app.get('/api/posts', async (req, res) => {
-  try {
-    if (mongoose.connection.readyState !== 1) {
-      throw new Error('Database not connected');
-    }
-    
-    console.log('Fetching posts...');
-    const posts = await Post.find()
-      .sort({ date: -1 })
-      .lean();
-
-    res.setHeader('Content-Type', 'application/json');
-    res.status(200).json(posts);
-
-  } catch (err) {
-    console.error('Error fetching posts:', err);
-    res.setHeader('Content-Type', 'application/json');
-    res.status(500).json({ 
-      success: false,
-      error: err.message 
-    });
-  }
-});
 
 
 
 app.post('/api/posts', auth, async (req, res) => {
+  console.log(req.user._id)
   try {
-    const userId = typeof req.user._id === 'string' ? req.user._id : String(req.user._id);
     const { content } = req.body; 
-    
+    const userId = req.user.id || req.user._id;
+    console.log(userId);
     const post = new Post({
-      author: new mongoose.Types.ObjectId(userId),
+      author: userId,
       content: content,
       date: new Date()
     });

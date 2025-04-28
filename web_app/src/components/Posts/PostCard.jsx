@@ -57,22 +57,6 @@ const PostCard = ({ post }) => {
     setComments(prevComments =>
       prevComments.filter(comment => comment._id !== commentId)
     );
-    // try {
-    //   // const response = await axios.post(
-    //   //   `http://localhost:5000/api/comments/${commentId}/delete`,
-    //   //   {comment: commentText}, 
-    //   //   {
-    //   //     headers: {
-    //   //       'Content-Type': 'application/json',
-    //   //       'Authorization': `Bearer ${token}`
-    //   //     }
-    //   //   }
-    //   // );
-    //   console.log('Response from deleting comment:', response);
-    // } catch (error) {
-    //   console.error('Error deleting comment:', error.response?.data || error);
-    //   alert('Failed to delete comment. Please try again.');
-    // }
   };
 
   const handleUpdateComment = async (commentId) => {
@@ -81,35 +65,19 @@ const PostCard = ({ post }) => {
       alert("Updated comment cannot be empty");
       return;
     }
-        setComments(prevComments =>
-          prevComments.map(c =>
-            c._id === commentId ? { ...c, comment: updatedCommentText } : c
-          )    );
-    // try {
-    //   // const response = await axios.post(
-    //   //   `http://localhost:5000/api/comments/${commentId}/update`,
-    //   //   { comment: updatedCommentText },
-    //   //   {
-    //   //     headers: {
-    //   //       'Content-Type': 'application/json',
-    //   //       'Authorization': `Bearer ${token}`
-    //   //     }
-    //   //   }
-    //   // );
-    //   // console.log('Response from updating comment:', response);
-    //   setComments(prevComments =>
-    //     prevComments.map(c => (c._id === commentId ? updatedCommentText.data : c))
-    //   );
-    // } catch (error) {
-    //   console.error('Error updating comment:', error.response?.data || error);
-    //   alert('Failed to update comment. Please try again.');
-    // }
+    setComments(prevComments =>
+      prevComments.map(c =>
+        c._id === commentId ? { ...c, comment: updatedCommentText } : c
+      )
+    );
   };
 
   return (
     <div className="post-card">
       <div className="post-header">
-        <span className="post-author">{post.author}</span>
+        <span className="post-author">    
+          {typeof post.author === 'object' ? post.author.username : 'Unknown User'}
+        </span>
         <span className="post-date">
           {new Date(post.date).toLocaleDateString()}
         </span>

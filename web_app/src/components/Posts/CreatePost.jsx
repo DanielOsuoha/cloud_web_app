@@ -31,7 +31,6 @@ const CreatePost = () => {
 
       console.log('Post creation response:', response.data);
       setContent('');
-      window.location.reload()
     } catch (error) {
       console.error('Post creation error:', {
         status: error.response?.status,

@@ -12,6 +12,7 @@ const PostList = () => {
     try {
       const { data } = await axios.get('http://localhost:5000/api/posts');
       setPosts(data);
+      console.log('Fetched posts:', data);
       setLoading(false);
     } catch (err) {
       setError('Failed to fetch posts');
