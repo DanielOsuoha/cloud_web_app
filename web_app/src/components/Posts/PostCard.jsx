@@ -31,7 +31,7 @@ const PostCard = ({ post }) => {
 
     try {
       const response = await axios.post(
-        `http://localhost:5000/api/posts/${post._id}/comment`,
+        `http://localhost:5000/api/posts/${post._id}/comments`,
         { comment: commentText },
         {
           headers: {
@@ -53,26 +53,26 @@ const PostCard = ({ post }) => {
 
   const handleDeleteComment = async (commentId) => {
     if (!window.confirm("Are you sure you want to delete this comment?")) return;
-
-    try {
-      const response = await axios.post(
-        `http://localhost:5000/api/comments/${commentId}/delete`,
-        {comment: commentText}, 
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          }
-        }
-      );
-      console.log('Response from deleting comment:', response);
-      setComments(prevComments =>
-        prevComments.filter(comment => comment._id !== commentId)
-      );
-    } catch (error) {
-      console.error('Error deleting comment:', error.response?.data || error);
-      alert('Failed to delete comment. Please try again.');
-    }
+    
+    setComments(prevComments =>
+      prevComments.filter(comment => comment._id !== commentId)
+    );
+    // try {
+    //   // const response = await axios.post(
+    //   //   `http://localhost:5000/api/comments/${commentId}/delete`,
+    //   //   {comment: commentText}, 
+    //   //   {
+    //   //     headers: {
+    //   //       'Content-Type': 'application/json',
+    //   //       'Authorization': `Bearer ${token}`
+    //   //     }
+    //   //   }
+    //   // );
+    //   console.log('Response from deleting comment:', response);
+    // } catch (error) {
+    //   console.error('Error deleting comment:', error.response?.data || error);
+    //   alert('Failed to delete comment. Please try again.');
+    // }
   };
 
   const handleUpdateComment = async (commentId) => {
@@ -81,26 +81,29 @@ const PostCard = ({ post }) => {
       alert("Updated comment cannot be empty");
       return;
     }
-
-    try {
-      const response = await axios.post(
-        `http://localhost:5000/api/comments/${commentId}/update`,
-        { comment: updatedCommentText },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          }
-        }
-      );
-      console.log('Response from updating comment:', response);
-      setComments(prevComments =>
-        prevComments.map(c => (c._id === commentId ? response.data : c))
-      );
-    } catch (error) {
-      console.error('Error updating comment:', error.response?.data || error);
-      alert('Failed to update comment. Please try again.');
-    }
+        setComments(prevComments =>
+          prevComments.map(c =>
+            c._id === commentId ? { ...c, comment: updatedCommentText } : c
+          )    );
+    // try {
+    //   // const response = await axios.post(
+    //   //   `http://localhost:5000/api/comments/${commentId}/update`,
+    //   //   { comment: updatedCommentText },
+    //   //   {
+    //   //     headers: {
+    //   //       'Content-Type': 'application/json',
+    //   //       'Authorization': `Bearer ${token}`
+    //   //     }
+    //   //   }
+    //   // );
+    //   // console.log('Response from updating comment:', response);
+    //   setComments(prevComments =>
+    //     prevComments.map(c => (c._id === commentId ? updatedCommentText.data : c))
+    //   );
+    // } catch (error) {
+    //   console.error('Error updating comment:', error.response?.data || error);
+    //   alert('Failed to update comment. Please try again.');
+    // }
   };
 
   return (
