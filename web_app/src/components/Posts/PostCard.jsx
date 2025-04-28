@@ -58,7 +58,6 @@ const PostCard = ({ post }) => {
         }
       );
       
-      // Remove comment using index
       setComments(prevComments => 
         prevComments.filter((_, i) => i !== index)
       );

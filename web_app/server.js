@@ -74,14 +74,16 @@ app.post('/api/posts/:postId/comments', auth, async (req, res) => {
 
     const newComment = {
       comment,
-      user: req.user.id,
       username: req.user.username,
       date: new Date()
     };
 
     post.comments.push(newComment);
     await post.save();
-    res.json({ message: 'Comment added successfully', post });
+
+    // Return only the new comment that was just added
+    const addedComment = post.comments[post.comments.length - 1];
+    res.json(addedComment);
   } catch (error) {
     console.error('Error adding comment:', error);
     res.status(500).json({ error: 'Error adding comment' });
@@ -237,7 +239,6 @@ app.delete('/api/posts/:id', auth, async (req, res) => {
   }
 });
 
-// Update post
 app.put('/api/posts/:id', auth, async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
@@ -253,24 +254,35 @@ app.put('/api/posts/:id', auth, async (req, res) => {
   }
 });
 
-app.delete('/api/posts/:postId/comments/:commentId', auth, async (req, res) => {
+app.delete('/api/posts/:postId/comments/:commentIndex', auth, async (req, res) => {
   try {
-    const post = await Post.findById(req.params.postId);
+    const { postId, commentIndex } = req.params;
+    console.log('Delete comment request:', {
+      postId,
+      commentIndex,
+      username: req.user.username
+    });
+
+    const post = await Post.findById(postId);
     if (!post) {
+      console.log('Post not found:', postId);
       return res.status(404).json({ error: 'Post not found' });
     }
-    const commentIndex = post.comments.findIndex(
-      c => c._id.toString() === req.params.commentId
-    );
 
-    if (commentIndex === -1) {
+    console.log('Post comments length:', post.comments.length);
+    if (commentIndex >= post.comments.length) {
+      console.log('Comment index out of bounds:', commentIndex);
       return res.status(404).json({ error: 'Comment not found' });
     }
-    if (post.comments[commentIndex].username !== req.user.username) {
+
+    const comment = post.comments[commentIndex];
+    if (comment.username !== req.user.username) {
       return res.status(403).json({ error: 'Not authorized to delete this comment' });
     }
+
     post.comments.splice(commentIndex, 1);
     await post.save();
+
     res.json({ message: 'Comment deleted successfully' });
   } catch (error) {
     console.error('Delete comment error:', error);
