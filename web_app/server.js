@@ -77,7 +77,6 @@ app.post('/api/posts/:postId/comments', auth, async (req, res) => {
       username: req.user.username,
       date: new Date()
     };
-
     post.comments.push(newComment);
     await post.save();
     const addedComment = post.comments[post.comments.length - 1];
@@ -253,8 +252,8 @@ app.put('/api/posts/:id', auth, async (req, res) => {
 app.delete('/api/posts/:postId/comments/:commentIndex/delete', auth, async (req, res) => {
   console.log('delete343')
   try {
-    const { postId } = req.params;
-    const index = parseInt(req.params.commentIndex, 10);
+    const { postId, commentIndex } = req.params;
+    const index = parseInt(commentIndex, 10);
     const post = await Post.findById(postId);
     if (!post) {
       return res.status(404).json({ error: 'Post not found' });
