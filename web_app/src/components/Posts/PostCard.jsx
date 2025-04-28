@@ -3,7 +3,7 @@ import axios from 'axios';
 import { AuthContext } from '../../context/AuthContext';
 
 const PostCard = ({ post }) => {
-  const { user, token } = useContext(AuthContext);  // Add token from context
+  const { user, token } = useContext(AuthContext);
   const [showCommentForm, setShowCommentForm] = useState(false);
   const [commentText, setCommentText] = useState('');
   const [commentLoading, setCommentLoading] = useState(false);
@@ -47,15 +47,10 @@ const PostCard = ({ post }) => {
     }
   };
 
-  const handleDeleteComment = async (commentId) => {
-    if (!token) {
-      alert('Please login to delete comments');
-      return;
-    }
-
+  const handleDeleteComment = async (index) => {
     try {
       await axios.delete(
-        `http://localhost:5000/api/posts/${post._id}/comments/${commentId}`,
+        `http://localhost:5000/api/posts/${post._id}/comments/${index}`,
         {
           headers: {
             'Authorization': `Bearer ${token}`
@@ -63,10 +58,13 @@ const PostCard = ({ post }) => {
         }
       );
       
-      setComments(prev => prev.filter(comment => comment._id !== commentId));
+      // Remove comment using index
+      setComments(prevComments => 
+        prevComments.filter((_, i) => i !== index)
+      );
     } catch (error) {
       console.error('Error deleting comment:', error);
-      alert(error.response?.data?.error || 'Error deleting comment');
+      alert('Failed to delete comment');
     }
   };
 
@@ -92,36 +90,36 @@ const PostCard = ({ post }) => {
             onChange={(e) => setCommentText(e.target.value)}
             placeholder="Write your comment here..."
             rows="3"
-            />
+          />
           {commentError && <div className="error">{commentError}</div>}
           <button
             type="submit"
             className="submit-comment-button"
             disabled={commentLoading}
-            >
+          >
             {commentLoading ? 'Posting...' : 'Submit Comment'}
           </button>
         </form>
       )}
       {comments.length > 0 && (
         <div className="comments-section">
-          {comments.map((com, index) => (
-            <div key={com._id} className="comment-item">
+          {comments.map((comment, index) => (
+            <div key={index} className="comment-item">
               <div className="comment-header">
-                <div className="comment-username">By {com.username}</div>
+                <div className="comment-username">By {comment.username}</div>
                 <span className="comment-date">
-                  {new Date(com.date).toLocaleDateString()}
+                  {new Date(comment.date).toLocaleString()}
                 </span>
-                {user?.username === com.username && (
+                {user?.username === comment.username && (
                   <button 
-                    onClick={() => handleDeleteComment(com._id)}
                     className="delete-comment-button"
+                    onClick={() => handleDeleteComment(index)}
                   >
                     Delete
                   </button>
                 )}
               </div>
-              <div className="comment-content">{com.comment}</div>
+              <div className="comment-content">{comment.comment}</div>
             </div>
           ))}
         </div>
