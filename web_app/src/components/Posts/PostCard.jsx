@@ -43,7 +43,6 @@ const PostCard = ({ post }) => {
       console.log('Response from posting comment:', response);
       setComments(prev => [...prev, response.data]);
       setCommentText('');
-      // window.location.reload();
     } catch (error) {
       console.error('Error posting comment:', error);
       setCommentError(error.response?.data?.error || 'Error posting comment');
@@ -65,7 +64,7 @@ const PostCard = ({ post }) => {
         }
       );
       setComments(prevComments =>
-        prevComments.filter(comment => comment.id !== commentId)
+        prevComments.filter(comment => comment._id !== commentId)
       );
     } catch (error) {
       console.error('Error deleting comment:', error.response?.data || error);
@@ -118,9 +117,9 @@ const PostCard = ({ post }) => {
                 {user?.username === comment.username && (
                   <button
                     className="delete-comment-button"
-                    onClick={() => handleDeleteComment(comment.id)}
+                    onClick={() => handleDeleteComment(comment._id)}
                   >
-                    Delete {comment.id}
+                    Delete
                   </button>
                 )}
               </div>
