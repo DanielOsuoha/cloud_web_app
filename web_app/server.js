@@ -17,8 +17,8 @@ app.use(cors());
 app.use(express.json());
 
 const JWT_SECRET = process.env.JWT_SECRET || 'x7RTp9JqK5vM3nL8';
-// const MONGODB_URI = process.env.MONGODB_URI || "mongodb+srv://dosuoha:4kP4P8QvytMlDIhm@cluster0.1ziqjik.mongodb.net/social_app?retryWrites=true&w=majority&appName=Cluster0";
-const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/social_app"; 
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb+srv://dosuoha:4kP4P8QvytMlDIhm@cluster0.1ziqjik.mongodb.net/social_app?retryWrites=true&w=majority&appName=Cluster0";
+// const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/social_app"; 
 
 mongoose.connect(MONGODB_URI)
 .then(() => console.log('Connected to social_app MongoDB'))
