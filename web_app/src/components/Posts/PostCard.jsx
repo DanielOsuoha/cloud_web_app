@@ -63,7 +63,6 @@ const PostCard = ({ post }) => {
           }
         }
       );
-      console.log('Response from posting comment:', response);
       setComments(prev => [...prev, response.data]);
       setCommentText('');
     } catch (error) {
@@ -118,7 +117,6 @@ const PostCard = ({ post }) => {
         }
       );
       
-      // Update comment in state with the response data
       setComments(prevComments =>
         prevComments.map(c =>
           c._id === commentId ? response.data : c

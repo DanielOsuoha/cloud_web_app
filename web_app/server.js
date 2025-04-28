@@ -50,24 +50,24 @@ app.get('/api/posts', async (req, res) => {
 });
 
 
-app.post('/api/comments/:commentId/delete', auth, async (req, res) => {
-  try {
-    const { commentId } = req.params;
-    const comment = await Comment.findById(commentId).populate('user', 'username');
-    if (!comment) {
-      return res.status(404).json({ error: 'Comment not found.' });
-    }
-    if (comment.user._id.toString() !== req.user._id.toString()) {
-      return res.status(403).json({ error: 'Not authorized to delete this comment.' });
-    }
-    await comment.deleteOne();
+// app.post('/api/comments/:commentId/delete', auth, async (req, res) => {
+//   try {
+//     const { commentId } = req.params;
+//     const comment = await Comment.findById(commentId).populate('user', 'username');
+//     if (!comment) {
+//       return res.status(404).json({ error: 'Comment not found.' });
+//     }
+//     if (comment.user._id.toString() !== req.user._id.toString()) {
+//       return res.status(403).json({ error: 'Not authorized to delete this comment.' });
+//     }
+//     await comment.deleteOne();
 
-    res.json({ message: 'Comment deleted successfully', deletedComment: comment });
-  } catch (error) {
-    console.error('Delete comment error:', error);
-    res.status(500).json({ error: error.message });
-  }
-});
+//     res.json({ message: 'Comment deleted successfully', deletedComment: comment });
+//   } catch (error) {
+//     console.error('Delete comment error:', error);
+//     res.status(500).json({ error: error.message });
+//   }
+// });
 
 
 
@@ -86,8 +86,8 @@ app.post('/api/posts/:postId/comments', auth, async (req, res) => {
     }
     
     const newComment = new Comment({
-      post: postId,
-      user: req.user._id,
+      post: new mongoose.Types.ObjectId(postId),
+      user: new mongoose.Types.ObjectId(req.user.id),
       content: comment.trim(),
       date: new Date()
     });
@@ -119,10 +119,9 @@ app.get('/api/posts/:postId/comments', auth, async (req, res) => {
 
 app.post('/api/posts', auth, async (req, res) => {
   try {
-    const userId = typeof req.user._id === 'string' ? req.user._id : String(req.user._id);
     const { content } = req.body; 
     const post = new Post({
-      author: new mongoose.Types.ObjectId(userId),
+      author: new mongoose.Types.ObjectId(req.user.id),
       content: content,
       date: new Date()
     });
@@ -137,35 +136,35 @@ app.post('/api/posts', auth, async (req, res) => {
 
 
 
-app.post('/api/users/signup', async (req, res) => {
-  try {
-    const { username, email, password } = req.body;
-    console.log('Received signup request for:', email);
+// app.post('/api/users/signup', async (req, res) => {
+//   try {
+//     const { username, email, password } = req.body;
+//     console.log('Received signup request for:', email);
     
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+//     const salt = await bcrypt.genSalt(10);
+//     const hashedPassword = await bcrypt.hash(password, salt);
 
-    const user = new User({
-      username,
-      email,
-      password: hashedPassword
-    });
+//     const user = new User({
+//       username,
+//       email,
+//       password: hashedPassword
+//     });
 
-    await user.save();
-    res.status(201).json({
-      success: true,
-      user: {
-        id: user._id,
-        username: user.username,
-        email: user.email
-      }
-    });
+//     await user.save();
+//     res.status(201).json({
+//       success: true,
+//       user: {
+//         id: user._id,
+//         username: user.username,
+//         email: user.email
+//       }
+//     });
 
-  } catch (error) {
-    console.error('Signup error:', error);
-    res.status(500).json({ error: 'Error creating user' });
-  }
-});
+//   } catch (error) {
+//     console.error('Signup error:', error);
+//     res.status(500).json({ error: 'Error creating user' });
+//   }
+// });
 
 app.post('/api/users/login', async (req, res) => {
   try {
@@ -233,62 +232,62 @@ app.post('/api/users/reset-password', async (req, res) => {
   }
 });
 
-app.post('/api/posts/:id', auth, async (req, res) => {
-  try {
-    const post = await Post.findById(req.params.id);
-    if (!post) return res.status(404).json({ error: 'Post not found' });
-    if (post.author !== req.user.username) {
-      return res.status(403).json({ error: 'Not authorized' });
-    }
-    await post.deleteOne();
-    res.json({ message: 'Post deleted' });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+// app.post('/api/posts/:id', auth, async (req, res) => {
+//   try {
+//     const post = await Post.findById(req.params.id);
+//     if (!post) return res.status(404).json({ error: 'Post not found' });
+//     if (post.author !== req.user.username) {
+//       return res.status(403).json({ error: 'Not authorized' });
+//     }
+//     await post.deleteOne();
+//     res.json({ message: 'Post deleted' });
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// });
 
-app.put('/api/posts/:id', auth, async (req, res) => {
-  try {
-    const post = await Post.findById(req.params.id);
-    if (!post) return res.status(404).json({ error: 'Post not found' });
-    if (post.author !== req.user.username) {
-      return res.status(403).json({ error: 'Not authorized' });
-    }
-    post.content = req.body.content;
-    await post.save();
-    res.json(post);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+// app.put('/api/posts/:id', auth, async (req, res) => {
+//   try {
+//     const post = await Post.findById(req.params.id);
+//     if (!post) return res.status(404).json({ error: 'Post not found' });
+//     if (post.author !== req.user.username) {
+//       return res.status(403).json({ error: 'Not authorized' });
+//     }
+//     post.content = req.body.content;
+//     await post.save();
+//     res.json(post);
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// });
 
-app.post('/api/comments/:commentId/update', auth, async (req, res) => {
-  try {
-    const { commentId } = req.params;
-    const { comment } = req.body;
+// app.post('/api/comments/:commentId/update', auth, async (req, res) => {
+//   try {
+//     const { commentId } = req.params;
+//     const { comment } = req.body;
     
-    if (!comment || !comment.trim()) {
-      return res.status(400).json({ error: 'Updated comment cannot be empty' });
-    }
+//     if (!comment || !comment.trim()) {
+//       return res.status(400).json({ error: 'Updated comment cannot be empty' });
+//     }
     
-    const existingComment = await Comment.findById(commentId);
-    if (!existingComment) {
-      return res.status(404).json({ error: 'Comment not found.' });
-    }
+//     const existingComment = await Comment.findById(commentId);
+//     if (!existingComment) {
+//       return res.status(404).json({ error: 'Comment not found.' });
+//     }
     
-    if (existingComment.user.toString() !== req.user._id.toString()) {
-      return res.status(403).json({ error: 'Not authorized to update this comment.' });
-    }
+//     if (existingComment.user.toString() !== req.user._id.toString()) {
+//       return res.status(403).json({ error: 'Not authorized to update this comment.' });
+//     }
     
-    existingComment.content = comment.trim();
-    await existingComment.save();
+//     existingComment.content = comment.trim();
+//     await existingComment.save();
     
-    const populatedComment = await existingComment.populate('user', 'username');
-    res.json(populatedComment);
-  } catch (error) {
-    console.error('Error updating comment:', error);
-    res.status(500).json({ error: 'Error updating comment' });
-  }
-});
+//     const populatedComment = await existingComment.populate('user', 'username');
+//     res.json(populatedComment);
+//   } catch (error) {
+//     console.error('Error updating comment:', error);
+//     res.status(500).json({ error: 'Error updating comment' });
+//   }
+// });
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
