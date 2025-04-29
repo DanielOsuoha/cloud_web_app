@@ -9,6 +9,12 @@ import Post from './src/models/Post.js';
 import Comment from './src/models/Comment.js';
 import auth from './src/middleware/auth.js';
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 dotenv.config();
 const PORT = 5000;
 
@@ -378,6 +384,12 @@ app.put('/api/users/password', auth, async (req, res) => {
     console.error('Password update error:', error);
     res.status(500).json({ error: 'Server error while updating password' });
   }
+});
+
+app.use(express.static(path.join(__dirname, 'dist')));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist/index.html'));
 });
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
