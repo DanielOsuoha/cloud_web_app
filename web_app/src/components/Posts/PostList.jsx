@@ -10,7 +10,7 @@ const PostList = () => {
 
   const fetchPosts = async () => {
     try {
-      const { data } = await axios.get('http://localhost:5000/api/posts');
+      const { data } = await axios.get('http://34.205.144.114/api/posts');
       setPosts(data);
       // console.log('Fetched posts:', data);
       setLoading(false);

@@ -19,7 +19,7 @@ const CreatePost = () => {
     setIsSubmitting(true);
     try {
       const response = await axios.post(
-        'http://localhost:5000/api/posts',
+        'http://34.205.144.114/api/posts',
         { content },
         {
           headers: {

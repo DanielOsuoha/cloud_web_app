@@ -15,7 +15,7 @@ const PostCard = ({ post }) => {
     const fetchComments = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/posts/${post._id}/comments`, 
+          `http://34.205.144.114/api/posts/${post._id}/comments`, 
           {
             headers: token ? {
               'Authorization': `Bearer ${token}`
@@ -54,7 +54,7 @@ const PostCard = ({ post }) => {
 
     try {
       const response = await axios.post(
-        `http://localhost:5000/api/posts/${post._id}/comments`,
+        `http://34.205.144.114/api/posts/${post._id}/comments`,
         { comment: commentText },
         {
           headers: {
@@ -78,7 +78,7 @@ const PostCard = ({ post }) => {
     
     try {
       await axios.delete(
-        `http://localhost:5000/api/comments/${commentId}`,
+        `http://34.205.144.114/api/comments/${commentId}`,
         {
           headers: {
             'Authorization': `Bearer ${token}`
@@ -105,7 +105,7 @@ const PostCard = ({ post }) => {
     
     try {
       const response = await axios.put(
-        `http://localhost:5000/api/comments/${commentId}`,
+        `http://34.205.144.114/api/comments/${commentId}`,
         { comment: updatedCommentText },
         {
           headers: {
