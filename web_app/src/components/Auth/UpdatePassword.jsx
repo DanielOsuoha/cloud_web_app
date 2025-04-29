@@ -62,7 +62,7 @@ const UpdatePassword = () => {
     
     try {
       const response = await axios.put(
-        'http://localhost:5000/api/users/password',
+        'http://34.205.144.114/api/users/password',
         {
           email,
           currentPassword,
