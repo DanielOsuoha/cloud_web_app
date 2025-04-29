@@ -14,7 +14,7 @@ const Login = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await axios.post('http://34.205.144.114/api/users/login', {
+      const response = await axios.post('api/users/login', {
         email,
         password
       });
