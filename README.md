@@ -1,5 +1,6 @@
 # Social Cloud Web Application
 
+
 ## Overview
 Social Cloud is a full-stack social media web application built with the MERN stack (MongoDB, Express.js, React, Node.js). It allows users to create accounts, share posts, and interact through comments in a secure environment.
 
